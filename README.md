@@ -49,9 +49,19 @@ and options such as `maximumFractionDigits` would still work as before.
 
 The treatment of numeric string values was previously changed in 2023 as a part of the
 [Intl.NumberFormat V3 proposal](https://github.com/tc39/proposal-intl-numberformat-v3/?tab=readme-ov-file#interpret-strings-as-decimals-ecma-402-334),
-before which they were parsed into lower-precision Number values,
-and in [ECMA-402 PR #786](https://github.com/tc39/ecma402/pull/786),
-which raised the minimum/maximum fractional digit limits from 20 to 100.
+before which they were parsed into lower-precision Number values.
+
+The [Decimal proposal](https://github.com/tc39/proposal-decimal) is looking to introduce
+a numeric type capable of representing values with up to 34 decimal places of precision,
+along with a separate representation of the value's precision via `Decimal.Amount` or some other representation.
+Currently, the effective limits for the precision of Intl.NumberFormat and Intl.PluralRules
+are around 300 decimal places for the integer part, and 100 places for the fraction part.
+The maximum limit for the fraction precision was increased in 2023 from 20 to 100 in [ECMA-402 PR #786](https://github.com/tc39/ecma402/pull/786).
+
+A numerical string representation of a Number with trailing zeros is available as `Number.prototype.toPrecision`:
+```js
+(42).toPrecision(4) === "42.00"
+```
 
 <!--
 ## Implementations
