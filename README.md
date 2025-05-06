@@ -20,7 +20,7 @@ const nf = new Intl.NumberFormat("en");
 nf.format("1.0") === "1";
 
 const pr = new Intl.PluralRules("en");
-pr.select("1.0") === "other";
+pr.select("1.0") === "one";
 ```
 
 Instead, they should be retained:
@@ -30,7 +30,7 @@ const nf = new Intl.NumberFormat("en");
 nf.format("1.0") === "1.0";
 
 const pr = new Intl.PluralRules("en");
-pr.select("1.0") === "one";
+pr.select("1.0") === "other";
 ```
 
 ## Description
