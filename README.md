@@ -4,7 +4,10 @@
 
 Champion: Eemeli Aro
 
-Stage: 0
+Stage: 1
+
+Presentations:
+- [For Stage 1](https://docs.google.com/presentation/d/1gunNRRXJNdDwqTHh-XjV3ueI8PFasRI9WcF4KfWvxE0/edit?usp=sharing) (2025.05)
 
 ## Motivation
 
@@ -43,7 +46,16 @@ If accepted, this proposal would change the internals of these interfaces
 such that trailing zeros would be retained,
 and included in the formatted or selected value.
 The treatment of Number or BigInt values would not change,
-and options such as `maximumFractionDigits` would still work as before.
+and options such as `maximumFractionDigits` would still work as before:
+
+```js
+const nf = new Intl.NumberFormat('en', { minimumFractionDigits: 1 });
+
+nf.format('1') === '1.0'
+nf.format('1.00') === '1.00'
+nf.format('1.0000') === '1.000'
+  // maximumFractionDigits default is 3.
+```
 
 ## Background
 
@@ -61,6 +73,7 @@ The maximum limit for the fraction precision was increased in 2023 from 20 to 10
 A numerical string representation of a Number with trailing zeros is available as `Number.prototype.toPrecision`:
 ```js
 (42).toPrecision(4) === "42.00"
+(4200).toPrecision(2) === "4.2e+3"
 ```
 
 <!--
