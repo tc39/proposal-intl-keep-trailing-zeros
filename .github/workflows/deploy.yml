@@ -11,10 +11,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: ljharb/actions/node/install@main
-      name: 'nvm install lts/* && npm install'
-      with:
-        node-version: lts/*
     - run: npm run build
     - uses: JamesIves/github-pages-deploy-action@v4
       with:
