@@ -11,6 +11,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - run: npm install
     - run: npm run build
     - uses: JamesIves/github-pages-deploy-action@v4
       with:
