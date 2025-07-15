@@ -4,7 +4,7 @@
 
 Champion: Eemeli Aro
 
-Stage: 1
+Stage: 2
 
 Presentations:
 - [For Stage 1](https://docs.google.com/presentation/d/1gunNRRXJNdDwqTHh-XjV3ueI8PFasRI9WcF4KfWvxE0/edit?usp=sharing) (2025.05)
