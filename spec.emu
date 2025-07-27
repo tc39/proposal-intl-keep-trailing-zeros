@@ -480,42 +480,34 @@ contributors: Eemeli Aro
         1. Let _primValue_ be ? ToPrimitive(_value_, ~number~).
         1. If _primValue_ is a BigInt, return <del>ℝ(_primValue_)</del><ins>the Record { [[Value]]: ℝ(_primValue_), [[StringDigits]]: 0 }</ins>.
         1. If _primValue_ is a String, then
-          1. <del>Let _str_ be _primValue_.</del>
-          1. <ins>Let _text_ be StringToCodePoints(_primValue_).</ins>
-          1. <ins>Let _literal_ be ParseText(_text_, |StringNumericLiteral|).</ins>
-          1. <ins>If _literal_ is a List of errors, return the Record { [[Value]]: ~not-a-number~, [[StringDigits]]: 0 }.</ins>
-          1. <ins>Let _parseRes_ be the StringIntlMV of _literal_.</ins>
-          1. <ins>Let _x_ be the first element of _parseRes_.</ins>
-          1. <ins>Let _stringDigits_ be the second element of _parseRes_.</ins>
-          1. <ins>If _x_ is a mathematical value, then</ins>
-            1. <ins>Let _rounded_ be RoundMVResult(abs(_x_)).</ins>
-            1. <ins>If _rounded_ is *+∞*<sub>𝔽</sub>, then</ins>
-              1. <ins>If _x_ &lt; 0, set _x_ to ~negative-infinity~.</ins>
-              1. <ins>Else, set _x_ to ~positive-infinity~.</ins>
-              1. <ins>Set _stringDigits_ to 0.</ins>
-            1. <ins>If _rounded_ is *+0*<sub>𝔽</sub> and _x_ &lt; 0, set _x_ to ~negative-zero~.</ins>
-          1. <ins>Return the Record { [[Value]]: _x_, [[StringDigits]]: _stringDigits_ }.</ins>
+          1. Let _str_ be _primValue_.
         1. Else,
-          1. <del>Let _x_ be ? ToNumber(_primValue_).</del>
-          1. <del>If _x_ is *-0*<sub>𝔽</sub>, return ~negative-zero~.</del>
-          1. <del>Let _str_ be Number::toString(_x_, 10).</del>
-          1. <ins>Let _n_ be ? ToNumber(_primValue_).</ins>
-          1. <ins>If _n_ is *NaN*, let _x_ be ~not-a-number~.</ins>
-          1. <ins>Else if _n_ is *+∞*<sub>𝔽</sub>, let _x_ be ~positive-infinity~.</ins>
-          1. <ins>Else if _n_ is *-∞*<sub>𝔽</sub>, let _x_ be ~negative-infinity~.</ins>
-          1. <ins>Else, let _x_ be ℝ(_n_).</ins>
-          1. <ins>Return the Record { [[Value]]: _x_, [[StringDigits]]: 0 }.</ins>
-        1. <del>Let _text_ be StringToCodePoints(_str_).</del>
-        1. <del>Let _literal_ be ParseText(_text_, |StringNumericLiteral|).</del>
-        1. <del>If _literal_ is a List of errors, return ~not-a-number~.</del>
-        1. <del>Let _intlMV_ be the StringIntlMV of _literal_.</del>
-        1. <del>If _intlMV_ is a mathematical value, then</del>
-          1. <del>Let _rounded_ be RoundMVResult(abs(_intlMV_)).</del>
+          1. Let _x_ be ? ToNumber(_primValue_).
+          1. If _x_ is *-0*<sub>𝔽</sub>, return <del>~negative-zero~</del><ins>the Record { [[Value]]: ~negative-zero~, [[StringDigits]]: 0 }</ins>.
+          1. Let _str_ be Number::toString(_x_, 10).
+        1. Let _text_ be StringToCodePoints(_str_).
+        1. Let _literal_ be ParseText(_text_, |StringNumericLiteral|).
+        1. If _literal_ is a List of errors, return <del>~not-a-number~</del><ins>the Record { [[Value]]: ~not-a-number~, [[StringDigits]]: 0 }</ins>.
+        1. Let <del>_intlMV_</del><ins>_parseRes_</ins> be the StringIntlMV of _literal_.
+        1. <ins>Let _intlMV_ be the first element of _parseRes_.</ins>
+        1. <ins>If _primValue_ is a String, then</ins>
+          1. <ins>Let _stringDigits_ be the second element of _parseRes_.</ins>
+        1. <ins>Else,</ins>
+          1. <ins>Let _stringDigits_ be 0.</ins>
+        1. If _intlMV_ is a mathematical value, then
+          1. Let _rounded_ be RoundMVResult(abs(_intlMV_)).
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-infinity~.</del>
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub>, return ~positive-infinity~.</del>
+          1. <ins>If _rounded_ is *+∞*<sub>𝔽</sub>, then</ins>
+            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-infinity~.</ins>
+            1. <ins>Else, set _intlMV_ to ~positive-infinity~.</ins>
+            1. <ins>Set _stringDigits_ to 0.</ins>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-zero~.</del>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub>, return 0.</del>
-        1. <del>Return _intlMV_.</del>
+          1. <ins>If _rounded_ is *+0*<sub>𝔽</sub>, then</ins>
+            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-zero~.</ins>
+            1. <ins>Else, set _intlMV_ to 0.</ins>
+        1. Return <del>_intlMV_</del><ins>the Record { [[Value]]: _intlMV_, [[StringDigits]]: _stringDigits_ }</ins>.
       </emu-alg>
     </emu-clause>
 
