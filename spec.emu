@@ -343,7 +343,7 @@ contributors: Eemeli Aro
       <h1>
         GetNumberFormatPattern (
           _numberFormat_: an Intl.NumberFormat,
-          _x_: <del>an Intl mathematical value</del><ins></ins>either a mathematical value or one of ~positive-infinity~, ~negative-infinity~, ~not-a-number~, or ~negative-zero~</ins>,
+          _x_: <del>an Intl mathematical value</del><ins>either a mathematical value or one of ~positive-infinity~, ~negative-infinity~, ~not-a-number~, or ~negative-zero~</ins>,
         ): a String
       </h1>
       <dl class="header">
