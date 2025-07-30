@@ -20,7 +20,7 @@ contributors: Eemeli Aro
         FormatNumericToString (
           _intlObject_: an Object,
           _x_: a mathematical value or ~negative-zero~,
-          <ins>_stringDigits_: an integer,</ins>
+          <ins>_stringDigitCount_: an integer,</ins>
         ): a Record with fields [[RoundedNumber]] (a mathematical value or ~negative-zero~) and [[FormattedString]] (a String)
       </h1>
       <dl class="header">
@@ -39,12 +39,12 @@ contributors: Eemeli Aro
             1. Set _x_ to -_x_.
         1. Let _unsignedRoundingMode_ be GetUnsignedRoundingMode(_intlObject_.[[RoundingMode]], _sign_).
         1. If _intlObject_.[[RoundingType]] is ~significant-digits~, then
-          1. Let _result_ be ToRawPrecision(_x_, <ins>_stringDigits_,</ins> _intlObject_.[[MinimumSignificantDigits]], _intlObject_.[[MaximumSignificantDigits]], _unsignedRoundingMode_).
+          1. Let _result_ be ToRawPrecision(_x_, <ins>_stringDigitCount_,</ins> _intlObject_.[[MinimumSignificantDigits]], _intlObject_.[[MaximumSignificantDigits]], _unsignedRoundingMode_).
         1. Else if _intlObject_.[[RoundingType]] is ~fraction-digits~, then
-          1. Let _result_ be ToRawFixed(_x_, <ins>_stringDigits_,</ins> _intlObject_.[[MinimumFractionDigits]], _intlObject_.[[MaximumFractionDigits]], _intlObject_.[[RoundingIncrement]], _unsignedRoundingMode_).
+          1. Let _result_ be ToRawFixed(_x_, <ins>_stringDigitCount_,</ins> _intlObject_.[[MinimumFractionDigits]], _intlObject_.[[MaximumFractionDigits]], _intlObject_.[[RoundingIncrement]], _unsignedRoundingMode_).
         1. Else,
-          1. Let _sResult_ be ToRawPrecision(_x_, <ins>_stringDigits_,</ins> _intlObject_.[[MinimumSignificantDigits]], _intlObject_.[[MaximumSignificantDigits]], _unsignedRoundingMode_).
-          1. Let _fResult_ be ToRawFixed(_x_, <ins>_stringDigits_,</ins> _intlObject_.[[MinimumFractionDigits]], _intlObject_.[[MaximumFractionDigits]], _intlObject_.[[RoundingIncrement]], _unsignedRoundingMode_).
+          1. Let _sResult_ be ToRawPrecision(_x_, <ins>_stringDigitCount_,</ins> _intlObject_.[[MinimumSignificantDigits]], _intlObject_.[[MaximumSignificantDigits]], _unsignedRoundingMode_).
+          1. Let _fResult_ be ToRawFixed(_x_, <ins>_stringDigitCount_,</ins> _intlObject_.[[MinimumFractionDigits]], _intlObject_.[[MaximumFractionDigits]], _intlObject_.[[RoundingIncrement]], _unsignedRoundingMode_).
           1. If _fResult_.[[RoundingMagnitude]] &lt; _sResult_.[[RoundingMagnitude]], let _fixedIsMorePrecise_ be *true*; else let _fixedIsMorePrecise_ be *false*.
           1. If _intlObject_.[[RoundingType]] is ~more-precision~ and _fixedIsMorePrecise_ is *true*, then
             1. Let _result_ be _fResult_.
@@ -82,11 +82,11 @@ contributors: Eemeli Aro
 
       <emu-alg>
         1. <ins>If _x_ is an Intl mathematical value, then</ins>
-          1. <ins>Let _stringDigits_ be _x_.[[StringDigits]].</ins>
+          1. <ins>Let _stringDigitCount_ be _x_.[[StringDigitCount]].</ins>
           1. <ins>Set _x_ to _x_.[[Value]].</ins>
         1. <ins>Else,</ins>
           1. <ins>Assert: _x_ is a mathematical value.</ins>
-          1. <ins>Let _stringDigits_ be 0.</ins>
+          1. <ins>Let _stringDigitCount_ be 0.</ins>
         1. Let _exponent_ be 0.
         1. If _x_ is ~not-a-number~, then
           1. Let _n_ be an ILD String value indicating the *NaN* value.
@@ -100,7 +100,7 @@ contributors: Eemeli Aro
             1. If _numberFormat_.[[Style]] is *"percent"*, set _x_ be 100 × _x_.
             1. Set _exponent_ to ComputeExponent(_numberFormat_, _x_).
             1. Set _x_ to _x_ × 10<sup>-_exponent_</sup>.
-          1. Let _formatNumberResult_ be FormatNumericToString(_numberFormat_, _x_<ins>, _stringDigits_</ins>).
+          1. Let _formatNumberResult_ be FormatNumericToString(_numberFormat_, _x_<ins>, _stringDigitCount_</ins>).
           1. Let _n_ be _formatNumberResult_.[[FormattedString]].
           1. Set _x_ to _formatNumberResult_.[[RoundedNumber]].
         1. Let _pattern_ be GetNumberFormatPattern(_numberFormat_, _x_).
@@ -231,7 +231,7 @@ contributors: Eemeli Aro
       <h1>
         ToRawPrecision (
           _x_: a non-negative mathematical value,
-          <ins>_stringDigits_: an integer,</ins>
+          <ins>_stringDigitCount_: an integer,</ins>
           _minPrecision_: an integer in the inclusive interval from 1 to 21,
           _maxPrecision_: an integer in the inclusive interval from 1 to 21,
           _unsignedRoundingMode_: a specification type from the Unsigned Rounding Mode column of <emu-xref href="#table-intl-unsigned-rounding-modes"></emu-xref>, or *undefined*,
@@ -275,7 +275,7 @@ contributors: Eemeli Aro
           1. Set _m_ to the string-concatenation of *"0."*, -(_e_ + 1) occurrences of the code unit 0x0030 (DIGIT ZERO), and _m_.
           1. Let _int_ be 1.
         1. If _m_ contains the code unit 0x002E (FULL STOP) and _maxPrecision_ > _minPrecision_, then
-          1. Let _cut_ be _maxPrecision_ - <del>_minPrecision_</del><ins>max(_stringDigits_, _minPrecision_)</ins>.
+          1. Let _cut_ be _maxPrecision_ - <del>_minPrecision_</del><ins>max(_stringDigitCount_, _minPrecision_)</ins>.
           1. Repeat, while _cut_ > 0 and the last code unit of _m_ is 0x0030 (DIGIT ZERO),
             1. Remove the last code unit from _m_.
             1. Set _cut_ to _cut_ - 1.
@@ -289,7 +289,7 @@ contributors: Eemeli Aro
       <h1>
         ToRawFixed (
           _x_: a non-negative mathematical value,
-          <ins>_stringDigits_: an integer,</ins>
+          <ins>_stringDigitCount_: an integer,</ins>
           _minFraction_: an integer in the inclusive interval from 0 to 100,
           _maxFraction_: an integer in the inclusive interval from 0 to 100,
           _roundingIncrement_: an integer,
@@ -321,7 +321,7 @@ contributors: Eemeli Aro
           1. Let _a_ be the first _k_ - _f_ code units of _m_, and let _b_ be the remaining _f_ code units of _m_.
           1. <del>Set _m_ to the string-concatenation of _a_, *"."*, and _b_.</del>
           1. Let _int_ be the length of _a_.
-          1. <ins>Let _cut_ be _maxFraction_ - max(_stringDigits_ - _int_, _minFraction_).</ins>
+          1. <ins>Let _cut_ be _maxFraction_ - max(_stringDigitCount_ - _int_, _minFraction_).</ins>
           1. <ins>Repeat, while _cut_ > 0 and the last code unit of _b_ is 0x0030 (DIGIT ZERO),</ins>
             1. <ins>Remove the last code unit from _b_.</ins>
             1. <ins>Set _cut_ to _cut_ - 1.</ins>
@@ -472,28 +472,28 @@ contributors: Eemeli Aro
         <dd>
           It returns _value_ converted to an <dfn id="intl-mathematical-value">Intl mathematical value</dfn>, <del>which</del><ins>a Record with two fields:</ins>
           <ins>[[Value]]</ins> is a mathematical value <del>together with</del><ins>or one of</ins> ~positive-infinity~, ~negative-infinity~, ~not-a-number~, <ins>or ~negative-zero~,</ins> and
-          <del>~negative-zero~</del><ins>[[StringDigits]] is an integer indicating the number of significant digits in _value_ when it is a String, or 0 otherwise</ins>.
+          <del>~negative-zero~</del><ins>[[StringDigitCount]] is an integer indicating the number of significant digits in _value_ when it is a String, or 0 otherwise</ins>.
           This abstract operation is similar to <emu-xref href="#sec-tonumeric"></emu-xref>, but <del>a mathematical value can be returned instead of a Number or BigInt, so that exact decimal values can be represented</del><ins>retains the full precision of numeric strings</ins>.
         </dd>
       </dl>
       <emu-alg>
         1. Let _primValue_ be ? ToPrimitive(_value_, ~number~).
-        1. If _primValue_ is a BigInt, return <del>ℝ(_primValue_)</del><ins>the Record { [[Value]]: ℝ(_primValue_), [[StringDigits]]: 0 }</ins>.
+        1. If _primValue_ is a BigInt, return <del>ℝ(_primValue_)</del><ins>the Record { [[Value]]: ℝ(_primValue_), [[StringDigitCount]]: 0 }</ins>.
         1. If _primValue_ is a String, then
           1. Let _str_ be _primValue_.
         1. Else,
           1. Let _x_ be ? ToNumber(_primValue_).
-          1. If _x_ is *-0*<sub>𝔽</sub>, return <del>~negative-zero~</del><ins>the Record { [[Value]]: ~negative-zero~, [[StringDigits]]: 0 }</ins>.
+          1. If _x_ is *-0*<sub>𝔽</sub>, return <del>~negative-zero~</del><ins>the Record { [[Value]]: ~negative-zero~, [[StringDigitCount]]: 0 }</ins>.
           1. Let _str_ be Number::toString(_x_, 10).
         1. Let _text_ be StringToCodePoints(_str_).
         1. Let _literal_ be ParseText(_text_, |StringNumericLiteral|).
-        1. If _literal_ is a List of errors, return <del>~not-a-number~</del><ins>the Record { [[Value]]: ~not-a-number~, [[StringDigits]]: 0 }</ins>.
+        1. If _literal_ is a List of errors, return <del>~not-a-number~</del><ins>the Record { [[Value]]: ~not-a-number~, [[StringDigitCount]]: 0 }</ins>.
         1. Let <del>_intlMV_</del><ins>_stringData_</ins> be the StringIntlMV of _literal_.
         1. <ins>Let _intlMV_ be _stringData_[0].</ins>
         1. <ins>If _primValue_ is a String, then</ins>
-          1. <ins>Let _stringDigits_ be _stringData_[1].</ins>
+          1. <ins>Let _stringDigitCount_ be _stringData_[1].</ins>
         1. <ins>Else,</ins>
-          1. <ins>Let _stringDigits_ be 0.</ins>
+          1. <ins>Let _stringDigitCount_ be 0.</ins>
         1. If _intlMV_ is a mathematical value, then
           1. Let _rounded_ be RoundMVResult(abs(_intlMV_)).
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-infinity~.</del>
@@ -501,13 +501,13 @@ contributors: Eemeli Aro
           1. <ins>If _rounded_ is *+∞*<sub>𝔽</sub>, then</ins>
             1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-infinity~.</ins>
             1. <ins>Else, set _intlMV_ to ~positive-infinity~.</ins>
-            1. <ins>Set _stringDigits_ to 0.</ins>
+            1. <ins>Set _stringDigitCount_ to 0.</ins>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-zero~.</del>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub>, return 0.</del>
           1. <ins>If _rounded_ is *+0*<sub>𝔽</sub>, then</ins>
             1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-zero~.</ins>
             1. <ins>Else, set _intlMV_ to 0.</ins>
-        1. Return <del>_intlMV_</del><ins>the Record { [[Value]]: _intlMV_, [[StringDigits]]: _stringDigits_ }</ins>.
+        1. Return <del>_intlMV_</del><ins>the Record { [[Value]]: _intlMV_, [[StringDigitCount]]: _stringDigitCount_ }</ins>.
       </emu-alg>
     </emu-clause>
 
@@ -600,14 +600,14 @@ contributors: Eemeli Aro
           1. <del>Let _s_ be ! ToString(_n_)</del>
           1. <del>Return the Record { [[PluralCategory]]: *"other"*, [[FormattedString]]: _s_ }.</del>
         1. <ins>Let _x_ be _intlMV_.[[Value]].</ins>
-        1. <ins>Let _stringDigits_ be _intlMV_.[[StringDigits]].</ins>
+        1. <ins>Let _stringDigitCount_ be _intlMV_.[[StringDigitCount]].</ins>
         1. <ins>If _x_ is ~not-a-number~, then</ins>
           1. <ins>Return the Record { [[PluralCategory]]: *"other"*, [[FormattedString]]: *"NaN"* }</ins>.
         1. <ins>Else if _x_ is ~positive-infinity~, then</ins>
           1. <ins>Return the Record { [[PluralCategory]]: *"other"*, [[FormattedString]]: *"Infinity"* }.</ins>
         1. <ins>Else if _x_ is ~negative-infinity~, then</ins>
           1. <ins>Return the Record { [[PluralCategory]]: *"other"*, [[FormattedString]]: *"-Infinity"* }.</ins>
-        1. Let _res_ be FormatNumericToString(_pluralRules_, <del>ℝ(_n_)</del><ins>_x_, _stringDigits_</ins>).
+        1. Let _res_ be FormatNumericToString(_pluralRules_, <del>ℝ(_n_)</del><ins>_x_, _stringDigitCount_</ins>).
         1. Let _s_ be _res_.[[FormattedString]].
         1. Let _locale_ be _pluralRules_.[[Locale]].
         1. Let _type_ be _pluralRules_.[[Type]].
