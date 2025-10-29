@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <meta charset="utf8">
 <link rel="stylesheet" href="./spec.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
@@ -97,9 +97,14 @@ contributors: Eemeli Aro
         1. Else,
           1. If _x_ is not ~negative-zero~, then
             1. Assert: _x_ is a mathematical value.
-            1. If _numberFormat_.[[Style]] is *"percent"*, set _x_ be 100 × _x_.
+            1. <ins>Let _magnitude_ be the base 10 logarithm of abs(_x_) rounded down to the nearest integer.</ins>
+            1. If _numberFormat_.[[Style]] is *"percent"*<del>, set _x_ be 100 × _x_.</del><ins>, then</ins>
+              1. <ins>Set _x_ to 100 × _x_.</ins>
+              1. <ins>If _magnitude_ < 0, set _stringDigitCount_ to _stringDigitCount_ + max(_magnitude_, -2).</ins>
+              1. <ins>Set _magnitude_ to _magnitude_ + 2.</ins>
             1. Set _exponent_ to ComputeExponent(_numberFormat_, _x_).
             1. Set _x_ to _x_ × 10<sup>-_exponent_</sup>.
+            1. <ins>If _magnitude_ < 0 and _exponent_ < 0, set _stringDigitCount_ to _stringDigitCount_ + max(_magnitude_, _exponent_).</ins>
           1. Let _formatNumberResult_ be FormatNumericToString(_numberFormat_, _x_<ins>, _stringDigitCount_</ins>).
           1. Let _n_ be _formatNumberResult_.[[FormattedString]].
           1. Set _x_ to _formatNumberResult_.[[RoundedNumber]].
@@ -162,7 +167,7 @@ contributors: Eemeli Aro
       <h1>
         PartitionNotationSubPattern (
           _numberFormat_: an Intl.NumberFormat,
-          _x_: <del>an Intl</del><ins>a</ins> mathematical value<del>,</del><ins> or ~negative-zero~.</ins>
+          _x_: <del>an Intl</del><ins>a</ins> mathematical value<ins> or ~negative-zero~</ins>,
           _n_: a String,
           _exponent_: an integer,
         ): a List of Records with fields [[Type]] (a String) and [[Value]] (a String)
@@ -405,6 +410,7 @@ contributors: Eemeli Aro
         </p>
         </ins>
       </emu-note>
+      <emu-grammar type="definition"><ins>ZeroDigits ::: `0` ZeroDigits?</ins></emu-grammar>
       <emu-grammar>StringNumericLiteral ::: StrWhiteSpace?</emu-grammar>
       <emu-alg>
         1. Return <del>0</del><ins>« 0, 0 »</ins>.
@@ -432,10 +438,16 @@ contributors: Eemeli Aro
       <emu-alg>
         1. Return <del>~positive-infinity~</del><ins>« ~positive-infinity~, 0 »</ins>.
       </emu-alg>
-      <emu-grammar>StrUnsignedDecimalLiteral ::: DecimalDigits `.` DecimalDigits? ExponentPart?</emu-grammar>
+      <emu-grammar>StrUnsignedDecimalLiteral ::: <del>DecimalDigits</del> <ins>ZeroDigits? NonZeroDigit DecimalDigits?</ins> `.` DecimalDigits? ExponentPart?</emu-grammar>
       <emu-alg>
-        1. Let _a_ be MV of the first |DecimalDigits|.
-        1. <ins>Let _m_ be the number of code points in the first |DecimalDigits|.</ins>
+        1. <del>Let _a_ be MV of the first |DecimalDigits|.</del>
+        1. <ins>If the first |DecimalDigits| is present, then</ins>
+          1. <ins>Let _m_ be the number of code points in the first |DecimalDigits|.</ins>
+          1. <ins>Let _a_ be the MV of |NonZeroDigit| × 10<sup>_m_</sup> plus the MV of the first |DecimalDigits|.</ins>
+          1. <ins>Set _m_ to 1 + _m_.</ins>
+        1. <ins>Else,</ins>
+          1. <ins>Let _m_ be 1.</ins>
+          1. <ins>Let _a_ be the MV of |NonZeroDigit|.</ins>
         1. If the second |DecimalDigits| is present, then
           1. Let _b_ be MV of the second |DecimalDigits|.
           1. Let _n_ be the number of code points in the second |DecimalDigits|.
@@ -445,19 +457,30 @@ contributors: Eemeli Aro
         1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
         1. Return <ins>«</ins> (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup><ins>, _m_ + _n_ »</ins>.
       </emu-alg>
-      <emu-grammar>StrUnsignedDecimalLiteral ::: `.` DecimalDigits ExponentPart?</emu-grammar>
+      <emu-grammar>StrUnsignedDecimalLiteral ::: <ins>ZeroDigits?</ins> `.` DecimalDigits ExponentPart?</emu-grammar>
       <emu-alg>
         1. Let _b_ be MV of |DecimalDigits|.
         1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
         1. Let _n_ be the number of code points in |DecimalDigits|.
-        1. Return <ins>«</ins> _b_ × 10<sup>_e_ - _n_</sup><ins>, _n_ ».</ins>
+        1. Return <ins>«</ins> _b_ × 10<sup>_e_ - _n_</sup><ins>, 1 + _n_ ».</ins>
       </emu-alg>
-      <emu-grammar>StrUnsignedDecimalLiteral ::: DecimalDigits ExponentPart?</emu-grammar>
+      <emu-grammar>StrUnsignedDecimalLiteral ::: <del>DecimalDigits</del> <ins>ZeroDigits? NonZeroDigit DecimalDigits?</ins> ExponentPart?</emu-grammar>
       <emu-alg>
-        1. Let _a_ be MV of |DecimalDigits|.
+        1. <del>Let _a_ be MV of |DecimalDigits|.</del>
+        1. <ins>If the |DecimalDigits| is present, then</ins>
+          1. <ins>Let _m_ be the number of code points in |DecimalDigits|.</ins>
+          1. <ins>Let _a_ be the MV of |NonZeroDigit| × 10<sup>_m_</sup> plus the MV of |DecimalDigits|.</ins>
+          1. <ins>Set _m_ to 1 + _m_.</ins>
+        1. <ins>Else,</ins>
+          1. <ins>Let _m_ be 1.</ins>
+          1. <ins>Let _a_ be the MV of the |NonZeroDigit|.</ins>
         1. <ins>Let _m_ be the number of code points in |DecimalDigits|.</ins>
         1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
         1. Return <ins>«</ins> _a_ × 10<sup>_e_</sup><ins>, _m_ »</ins>.
+      </emu-alg>
+      <emu-grammar><ins>StrUnsignedDecimalLiteral ::: ZeroDigits ExponentPart?</ins></emu-grammar>
+      <emu-alg>
+        1. <ins>Return « 0, 0 ».</ins>
       </emu-alg>
     </emu-clause>
 
