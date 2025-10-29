@@ -612,7 +612,8 @@ contributors: Eemeli Aro
         1. Let _locale_ be _pluralRules_.[[Locale]].
         1. Let _type_ be _pluralRules_.[[Type]].
         1. Let _notation_ be _pluralRules_.[[Notation]].
-        1. Let _p_ be PluralRuleSelect(_locale_, _type_, _notation_, _s_).
+        1. Let _compactDisplay_ be _pluralRules_.[[CompactDisplay]].
+        1. Let _p_ be PluralRuleSelect(_locale_, _type_, _notation_, _compactDisplay_, _s_).
         1. Return the Record { [[PluralCategory]]: _p_, [[FormattedString]]: _s_ }.
       </emu-alg>
     </emu-clause>
@@ -638,7 +639,8 @@ contributors: Eemeli Aro
         1. Let _locale_ be _pluralRules_.[[Locale]].
         1. Let _type_ be _pluralRules_.[[Type]].
         1. Let _notation_ be _pluralRules_.[[Notation]].
-        1. Return PluralRuleSelectRange(_locale_, _type_, _notation_, _xp_.[[PluralCategory]], _yp_.[[PluralCategory]]).
+        1. Let _compactDisplay_ be _pluralRules_.[[CompactDisplay]].
+        1. Return PluralRuleSelectRange(_locale_, _type_, _notation_, _compactDisplay_, _xp_.[[PluralCategory]], _yp_.[[PluralCategory]]).
       </emu-alg>
     </emu-clause>
   </emu-clause>
