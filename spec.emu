@@ -97,7 +97,8 @@ contributors: Eemeli Aro
         1. Else,
           1. If _x_ is not ~negative-zero~, then
             1. Assert: _x_ is a mathematical value.
-            1. <ins>Let _magnitude_ be the base 10 logarithm of abs(_x_) rounded down to the nearest integer.</ins>
+            1. <ins>If _x_ = 0, let _magnitude_ be -∞.</ins>
+            1. <ins>Else, let _magnitude_ be the base 10 logarithm of abs(_x_) rounded down to the nearest integer.</ins>
             1. If _numberFormat_.[[Style]] is *"percent"*<del>, set _x_ be 100 × _x_.</del><ins>, then</ins>
               1. <ins>Set _x_ to 100 × _x_.</ins>
               1. <ins>If _magnitude_ < 0, set _stringDigitCount_ to _stringDigitCount_ + max(_magnitude_, -2).</ins>
