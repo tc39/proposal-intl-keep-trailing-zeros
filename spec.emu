@@ -97,8 +97,7 @@ contributors: Eemeli Aro
         1. Else,
           1. If _x_ is not ~negative-zero~, then
             1. Assert: _x_ is a mathematical value.
-            1. <ins>If _x_ = 0, let _magnitude_ be -∞.</ins>
-            1. <ins>Else, let _magnitude_ be floor(log10(_x_)).</ins>
+            1. <ins>If _x_ = 0, let _magnitude_ be -∞; else let _magnitude_ be floor(log10(_x_)).</ins>
             1. If _numberFormat_.[[Style]] is *"percent"*<del>, set _x_ be 100 × _x_.</del><ins>, then</ins>
               1. <ins>Set _x_ to 100 × _x_.</ins>
               1. <ins>If _magnitude_ < 0, set _stringDigitCount_ to _stringDigitCount_ + max(_magnitude_, -2).</ins>
@@ -331,8 +330,7 @@ contributors: Eemeli Aro
           1. <ins>Repeat, while _cut_ > 0 and the last code unit of _b_ is 0x0030 (DIGIT ZERO),</ins>
             1. <ins>Remove the last code unit from _b_.</ins>
             1. <ins>Set _cut_ to _cut_ - 1.</ins>
-          1. <ins>If _b_ is the empty String, set _m_ to _a_.</ins>
-          1. <ins>Else, set _m_ to the string-concatenation of _a_, *"."*, and _b_.</ins>
+          1. <ins>If _b_ is the empty String, set _m_ to _a_; else set _m_ to the string-concatenation of _a_, *"."*, and _b_.</ins>
         1. Else,
           1. Let _int_ be the length of _m_.
         1. <del>Let _cut_ be _maxFraction_ - _minFraction_.</del>
@@ -523,14 +521,12 @@ contributors: Eemeli Aro
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-infinity~.</del>
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub>, return ~positive-infinity~.</del>
           1. <ins>If _rounded_ is *+∞*<sub>𝔽</sub>, then</ins>
-            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-infinity~.</ins>
-            1. <ins>Else, set _intlMV_ to ~positive-infinity~.</ins>
+            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-infinity~; else set _intlMV_ to ~positive-infinity~.</ins>
             1. <ins>Set _stringDigitCount_ to 0.</ins>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-zero~.</del>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub>, return 0.</del>
           1. <ins>If _rounded_ is *+0*<sub>𝔽</sub>, then</ins>
-            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-zero~.</ins>
-            1. <ins>Else, set _intlMV_ to 0.</ins>
+            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-zero~; else set _intlMV_ to 0.</ins>
         1. Return <del>_intlMV_</del><ins>the Record { [[Value]]: _intlMV_, [[StringDigitCount]]: _stringDigitCount_ }</ins>.
       </emu-alg>
     </emu-clause>
