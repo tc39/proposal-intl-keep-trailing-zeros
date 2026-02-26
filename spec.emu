@@ -195,14 +195,9 @@ contributors: Eemeli Aro
         1. Else,
           1. If _x_ is not ~negative-zero~, then
             1. Assert: _x_ is a mathematical value.
-            1. <ins>If _x_ = 0, let _magnitude_ be -∞; else let _magnitude_ be floor(log10(_x_)).</ins>
-            1. If _numberFormat_.[[Style]] is *"percent"*<del>, set _x_ be 100 × _x_.</del><ins>, then</ins>
-              1. <ins>Set _x_ to 100 × _x_.</ins>
-              1. <ins>If _magnitude_ < 0, set _stringDigitCount_ to _stringDigitCount_ + max(_magnitude_, -2).</ins>
-              1. <ins>Set _magnitude_ to _magnitude_ + 2.</ins>
+            1. If _numberFormat_.[[Style]] is *"percent"*, set _x_ be 100 × _x_.
             1. Set _exponent_ to ComputeExponent(_numberFormat_, _x_).
             1. Set _x_ to _x_ × 10<sup>-_exponent_</sup>.
-            1. <ins>If _magnitude_ < 0 and _exponent_ < 0, set _stringDigitCount_ to _stringDigitCount_ + max(_magnitude_, _exponent_).</ins>
           1. Let _formatNumberResult_ be FormatNumericToString(_numberFormat_, _x_<ins>, _stringDigitCount_</ins>).
           1. Let _n_ be _formatNumberResult_.[[FormattedString]].
           1. Set _x_ to _formatNumberResult_.[[RoundedNumber]].
@@ -378,7 +373,9 @@ contributors: Eemeli Aro
           1. Set _m_ to the string-concatenation of *"0."*, -(_e_ + 1) occurrences of the code unit 0x0030 (DIGIT ZERO), and _m_.
           1. Let _int_ be 1.
         1. If _m_ contains the code unit 0x002E (FULL STOP) and _maxPrecision_ > _minPrecision_, then
-          1. Let _cut_ be _maxPrecision_ - <del>_minPrecision_</del><ins>max(_stringDigitCount_, _minPrecision_)</ins>.
+          1. <ins>Let _sdc_ be _stringDigitCount_.</ins>
+          1. <ins>If _x_ ≠ 0 and _e_ &lt; 0, set _sdc_ to _sdc_ - _e_.</ins>
+          1. Let _cut_ be _maxPrecision_ - <del>_minPrecision_</del><ins>max(_sdc_, _minPrecision_)</ins>.
           1. Repeat, while _cut_ > 0 and the last code unit of _m_ is 0x0030 (DIGIT ZERO),
             1. Remove the last code unit from _m_.
             1. Set _cut_ to _cut_ - 1.
@@ -421,10 +418,16 @@ contributors: Eemeli Aro
             1. Let _z_ be the String value consisting of _f_ + 1 - _k_ occurrences of the code unit 0x0030 (DIGIT ZERO).
             1. Set _m_ to the string-concatenation of _z_ and _m_.
             1. Set _k_ to _f_ + 1.
+          1. <ins>Else,</ins>
+            1. <ins>Let _z_ be the empty String.</ins>
           1. Let _a_ be the first _k_ - _f_ code units of _m_, and let _b_ be the remaining _f_ code units of _m_.
           1. <del>Set _m_ to the string-concatenation of _a_, *"."*, and _b_.</del>
           1. Let _int_ be the length of _a_.
-          1. <ins>Let _cut_ be _maxFraction_ - max(_stringDigitCount_ - _int_, _minFraction_).</ins>
+          1. <ins>Let _sfc_ be _stringDigitCount_ - _int_.</ins>
+          1. <ins>If _x_ ≠ 0, then</ins>
+            1. <ins>Let _zn_ be the length of _z_.</ins>
+            1. <ins>Set _sfc_ to _sfc_ + _zn_.</ins>
+          1. <ins>Let _cut_ be _maxFraction_ - max(_sfc_, _minFraction_).</ins>
           1. <ins>Repeat, while _cut_ > 0 and the last code unit of _b_ is 0x0030 (DIGIT ZERO),</ins>
             1. <ins>Remove the last code unit from _b_.</ins>
             1. <ins>Set _cut_ to _cut_ - 1.</ins>
@@ -540,39 +543,41 @@ contributors: Eemeli Aro
       <emu-alg>
         1. Let _a_ be MV of the first |DecimalDigits|.
         1. <ins>Let _m_ be the number of code points in the first |DecimalDigits|.</ins>
-        1. <ins>Let _leadingZeroCount_ be the count of leading U+0030 (DIGIT ZERO) code points in the first |DecimalDigits|.</ins>
-        1. <ins>Set _m_ to max(1, _m_ - _leadingZeroCount_).</ins>
+        1. <ins>Let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in the first |DecimalDigits|.</ins>
         1. If the second |DecimalDigits| is present, then
           1. Let _b_ be MV of the second |DecimalDigits|.
           1. Let _n_ be the number of code points in the second |DecimalDigits|.
+          1. <ins>If _a_ = 0, then</ins>
+            1. <ins>Let _zn_ be the count of leading U+0030 (DIGIT ZERO) code points in the second |DecimalDigits|.</ins>
+            1. <ins>Set _z_ to _z_ + _zn_.</ins>
         1. Else,
           1. Let _b_ be 0.
           1. Let _n_ be 0.
+        1. <ins>If _a_ = 0 and _b_ = 0, then</ins>
+          1. <ins>Set _m_ to 1.</ins>
+          1. <ins>Set _z_ to 0.</ins>
         1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
-        1. <ins>If _m_ + _e_ &lt; 1, set _m_ to 1 - _e_.</ins>
-        1. Return <ins>«</ins> (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup><ins>, _m_ + _n_ »</ins>.
+        1. Return <ins>«</ins> (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup><ins>, _m_ + _n_ - _z_»</ins>.
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: `.` DecimalDigits ExponentPart?</emu-grammar>
       <emu-alg>
         1. Let _b_ be MV of |DecimalDigits|.
         1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
-        1. <ins>If _e_ &lt; 0, let _m_ be 1 - _e_; else, let _m_ be 1.</ins>
         1. Let _n_ be the number of code points in |DecimalDigits|.
-        1. Return <ins>«</ins> _b_ × 10<sup>_e_ - _n_</sup><ins>, _m_ + _n_ ».</ins>
+        1. <ins>If _b_ = 0, let _z_ be 0; else let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in |DecimalDigits|.</ins>
+        1. Return <ins>«</ins> _b_ × 10<sup>_e_ - _n_</sup><ins>, 1 + _n_ - _z_ ».</ins>
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: DecimalDigits ExponentPart?</emu-grammar>
       <emu-alg>
         1. Let _a_ be MV of |DecimalDigits|.
-        1. <ins>Let _m_ be the number of code points in |DecimalDigits|.</ins>
-        1. <ins>Let _leadingZeroCount_ be the count of leading U+0030 (DIGIT ZERO) code points in |DecimalDigits|.</ins>
-        1. <ins>Set _m_ to _m_ - _leadingZeroCount_.</ins>
         1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
-        1. <ins>If _m_ + _e_ &lt; 1, set _m_ to 1 - _e_.</ins>
-        1. Return <ins>«</ins> _a_ × 10<sup>_e_</sup><ins>, _m_ »</ins>.
-      </emu-alg>
-      <emu-grammar><ins>StrUnsignedDecimalLiteral ::: ZeroDigits ExponentPart?</ins></emu-grammar>
-      <emu-alg>
-        1. <ins>Return « 0, 0 ».</ins>
+        1. <ins>If _a_ = 0, then</ins>
+          1. <ins>Let _m_ be 1.</ins>
+          1. <ins>Let _z_ be 0.</ins>
+        1. <ins>Else,</ins>
+          1. <ins>Let _m_ be the number of code points in |DecimalDigits|.</ins>
+          1. <ins>Let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in |DecimalDigits|.</ins>
+        1. Return <ins>«</ins> _a_ × 10<sup>_e_</sup><ins>, _m_ - _z_ »</ins>.
       </emu-alg>
     </emu-clause>
 
@@ -587,7 +592,7 @@ contributors: Eemeli Aro
         <dd>
           It returns _value_ converted to an <dfn id="intl-mathematical-value">Intl mathematical value</dfn>, <del>which</del><ins>a Record with two fields:</ins>
           <ins>[[Value]]</ins> is a mathematical value <del>together with</del><ins>or one of</ins> ~positive-infinity~, ~negative-infinity~, ~not-a-number~, <ins>or ~negative-zero~,</ins> and
-          <del>~negative-zero~</del><ins>[[StringDigitCount]] is an integer indicating the number of significant digits in _value_ when it is a String, or 0 otherwise</ins>.
+          <del>~negative-zero~</del><ins>[[StringDigitCount]] is an integer indicating the number of decimal digits in _value_ when it is a String (ignoring any exponent, and not counting leading zeros), or 0 otherwise</ins>.
           This abstract operation is similar to <emu-xref href="#sec-tonumeric"></emu-xref>, but <del>a mathematical value can be returned instead of a Number or BigInt, so that exact decimal values can be represented</del><ins>retains the full precision of numeric strings</ins>.
         </dd>
       </dl>
