@@ -541,43 +541,71 @@ contributors: Eemeli Aro
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: DecimalDigits `.` DecimalDigits? ExponentPart?</emu-grammar>
       <emu-alg>
-        1. Let _a_ be MV of the first |DecimalDigits|.
-        1. <ins>Let _m_ be the number of code points in the first |DecimalDigits|.</ins>
-        1. <ins>Let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in the first |DecimalDigits|.</ins>
-        1. If the second |DecimalDigits| is present, then
-          1. Let _b_ be MV of the second |DecimalDigits|.
-          1. Let _n_ be the number of code points in the second |DecimalDigits|.
-          1. <ins>If _a_ = 0, then</ins>
-            1. <ins>Let _zn_ be the count of leading U+0030 (DIGIT ZERO) code points in the second |DecimalDigits|.</ins>
-            1. <ins>Set _z_ to _z_ + _zn_.</ins>
-        1. Else,
-          1. Let _b_ be 0.
-          1. Let _n_ be 0.
-        1. <ins>If _a_ = 0 and _b_ = 0, then</ins>
-          1. <ins>Set _m_ to 1.</ins>
-          1. <ins>Set _z_ to 0.</ins>
-        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
-        1. Return <ins>«</ins> (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup><ins>, _m_ + _n_ - _z_»</ins>.
+        1. <del>Let _a_ be MV of the first |DecimalDigits|.</del>
+        1. <del>If the second |DecimalDigits| is present, then</del>
+          1. <del>Let _b_ be MV of the second |DecimalDigits|.</del>
+          1. <del>Let _n_ be the number of code points in the second |DecimalDigits|.</del>
+        1. <del>Else,</del>
+          1. <del>Let _b_ be 0.</del>
+          1. <del>Let _n_ be 0.</del>
+        1. <ins>Let _intPart_ be the first |DecimalDigits|.</ins>
+        1. <ins>If the second |DecimalDigits| is present, let _fracPart_ be the second |DecimalDigits|; else let _fracPart_ be ~empty~.</ins>
+        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|<del>. Otherwise,</del><ins>; else</ins> let _e_ be 0.
+        1. Return <del>(_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup></del><ins>StringIntlMVFromParts(_intPart_, _fracPart_, _e_)</ins>.
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: `.` DecimalDigits ExponentPart?</emu-grammar>
       <emu-alg>
-        1. Let _b_ be MV of |DecimalDigits|.
-        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
-        1. Let _n_ be the number of code points in |DecimalDigits|.
-        1. <ins>If _b_ = 0, let _z_ be 0; else let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in |DecimalDigits|.</ins>
-        1. Return <ins>«</ins> _b_ × 10<sup>_e_ - _n_</sup><ins>, 1 + _n_ - _z_ ».</ins>
+        1. <del>Let _b_ be MV of |DecimalDigits|.</del>
+        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|<del>. Otherwise,</del><ins>; else</ins> let _e_ be 0.
+        1. <del>Let _n_ be the number of code points in |DecimalDigits|.</del>
+        1. Return <del>_b_ × 10<sup>_e_ - _n_</sup></del><ins>StringIntlMVFromParts(~empty~, |DecimalDigits|, _e_)</ins>.
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: DecimalDigits ExponentPart?</emu-grammar>
       <emu-alg>
-        1. Let _a_ be MV of |DecimalDigits|.
-        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
-        1. <ins>If _a_ = 0, then</ins>
-          1. <ins>Let _m_ be 1.</ins>
-          1. <ins>Let _z_ be 0.</ins>
-        1. <ins>Else,</ins>
-          1. <ins>Let _m_ be the number of code points in |DecimalDigits|.</ins>
-          1. <ins>Let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in |DecimalDigits|.</ins>
-        1. Return <ins>«</ins> _a_ × 10<sup>_e_</sup><ins>, _m_ - _z_ »</ins>.
+        1. <del>Let _a_ be MV of |DecimalDigits|.</del>
+        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|<del>. Otherwise,</del><ins>; else</ins> let _e_ be 0.
+        1. Return <del>_a_ × 10<sup>_e_</sup></del><ins>StringIntlMVFromParts(|DecimalDigits|, ~empty~, _e_)</ins>.
+      </emu-alg>
+    </emu-clause>
+
+    <emu-clause id="sec-stringintlmvfromparts" type="abstract operation">
+      <h1>
+        <ins>
+          StringIntlMVFromParts (
+            _intPart_: a Parse Node or ~empty~,
+            _fracPart_: a Parse Node or ~empty~,
+            _e_: a mathematical value,
+          ): a List
+        </ins>
+      </h1>
+      <dl class="header">
+        <dt>description</dt>
+        <dd>
+          The returned List contains two values: a mathematical value corresponding to the source text, and the count of decimal digits in the source text.
+        </dd>
+      </dl>
+      <emu-alg>
+        1. If _intPart_ is ~empty~, then
+          1. Let _a_ be 0.
+          1. Let _m_ be 0.
+          1. Let _z_ be 0.
+        1. Else,
+          1. Let _a_ be MV of _intPart_.
+          1. Let _m_ be the number of code points in _intPart_.
+          1. Let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in _intPart_.
+        1. If _fracPart_ is ~empty~, then
+          1. Let _b_ be 0.
+          1. Let _n_ be 0.
+        1. Else,
+          1. Let _b_ be MV of _fracPart_.
+          1. Let _n_ be the number of code points in _fracPart_.
+          1. If _a_ = 0, then
+            1. Let _zn_ be the count of leading U+0030 (DIGIT ZERO) code points in _fracPart_.
+            1. Set _z_ to _z_ + _zn_.
+        1. If _a_ = 0 and _b_ = 0, then
+          1. Set _m_ to 1.
+          1. Set _z_ to 0.
+        1. Return « (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup>, _m_ + _n_ - _z_».
       </emu-alg>
     </emu-clause>
 
