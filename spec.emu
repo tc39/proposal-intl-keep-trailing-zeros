@@ -508,7 +508,7 @@ contributors: Eemeli Aro
         <ins class="block">
           <p>
             The conversion of a |StringNumericLiteral| to a mathematical value and a precision is similar overall to the determination of the NumericValue of a |NumericLiteral| (see <emu-xref href="#sec-literals-numeric-literals"></emu-xref>), but some of the details are different.
-            The result of StringIntlMV is a List value with two elements, a mathematical value and the count of decimal digits in the source text.
+            The result of StringIntlMV is a List value with two elements, a mathematical value and the count of significant decimal digits in the source text.
           </p>
         </ins>
       </emu-note>
@@ -581,7 +581,7 @@ contributors: Eemeli Aro
       <dl class="header">
         <dt>description</dt>
         <dd>
-          The returned List contains two values: a mathematical value corresponding to the source text, and the count of decimal digits in the source text.
+          The returned List contains two values: a mathematical value corresponding to the source text, and the count of significant decimal digits in the source text.
         </dd>
       </dl>
       <emu-alg>
@@ -592,6 +592,7 @@ contributors: Eemeli Aro
         1. Else,
           1. Let _a_ be MV of _intPart_.
           1. Let _m_ be the number of code points in _intPart_.
+          1. Assert: _m_ > 0.
           1. Let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in _intPart_.
         1. If _fracPart_ is ~empty~, then
           1. Let _b_ be 0.
@@ -599,12 +600,11 @@ contributors: Eemeli Aro
         1. Else,
           1. Let _b_ be MV of _fracPart_.
           1. Let _n_ be the number of code points in _fracPart_.
+          1. Assert: _n_ > 0.
           1. If _a_ = 0, then
             1. Let _zn_ be the count of leading U+0030 (DIGIT ZERO) code points in _fracPart_.
             1. Set _z_ to _z_ + _zn_.
-        1. If _a_ = 0 and _b_ = 0, then
-          1. Set _m_ to 1.
-          1. Set _z_ to 0.
+        1. If _a_ = 0 and _b_ = 0, return « 0, 1 + _n_ ».
         1. Return « (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup>, _m_ + _n_ - _z_».
       </emu-alg>
     </emu-clause>
@@ -651,8 +651,9 @@ contributors: Eemeli Aro
             1. <ins>Set _stringDigitCount_ to 0.</ins>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-zero~.</del>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub>, return 0.</del>
-          1. <ins>If _rounded_ is *+0*<sub>𝔽</sub>, then</ins>
+          1. <ins>Else if _rounded_ is *+0*<sub>𝔽</sub>, then</ins>
             1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-zero~; else set _intlMV_ to 0.</ins>
+            1. NOTE: The value of _stringDigitCount_ is retained.
         1. Return <del>_intlMV_</del><ins>the Record { [[Value]]: _intlMV_, [[StringDigitCount]]: _stringDigitCount_ }</ins>.
       </emu-alg>
     </emu-clause>
