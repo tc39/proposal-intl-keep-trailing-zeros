@@ -415,18 +415,16 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
         1. If _f_ ≠ 0, then
           1. Let _k_ be the length of _m_.
           1. If _k_ ≤ _f_, then
-            1. Let _z_ be the String value consisting of _f_ + 1 - _k_ occurrences of the code unit 0x0030 (DIGIT ZERO).
+            1. <ins>Let _zn_ be _f_ + 1 - _k_.</ins>
+            1. Let _z_ be the String value consisting of <del>_f_ + 1 - _k_</del><ins>_zn_</ins> occurrences of the code unit 0x0030 (DIGIT ZERO).
             1. Set _m_ to the string-concatenation of _z_ and _m_.
             1. Set _k_ to _f_ + 1.
           1. <ins>Else,</ins>
-            1. <ins>Let _z_ be the empty String.</ins>
+            1. <ins>Let _zn_ be 0.</ins>
           1. Let _a_ be the first _k_ - _f_ code units of _m_, and let _b_ be the remaining _f_ code units of _m_.
           1. <del>Set _m_ to the string-concatenation of _a_, *"."*, and _b_.</del>
           1. Let _int_ be the length of _a_.
-          1. <ins>Let _sfc_ be _stringDigitCount_ - _int_.</ins>
-          1. <ins>If _n_ ≠ 0, then</ins>
-            1. <ins>Let _zn_ be the length of _z_.</ins>
-            1. <ins>Set _sfc_ to _sfc_ + _zn_.</ins>
+          1. <ins>If _n_ = 0, let _sfc_ be _stringDigitCount_ - _int_; else let _sfc_ be _stringDigitCount_ - _int_ + _zn_.</ins>
           1. <ins>Let _cut_ be _maxFraction_ - max(_sfc_, _minFraction_).</ins>
           1. <ins>Repeat, while _cut_ > 0 and the last code unit of _b_ is 0x0030 (DIGIT ZERO),</ins>
             1. <ins>Remove the last code unit from _b_.</ins>
