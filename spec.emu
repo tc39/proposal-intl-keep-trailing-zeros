@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <meta charset="utf8">
 <link rel="stylesheet" href="./spec.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
@@ -7,6 +7,7 @@
 title: Keep trailing zeros in Intl.NumberFormat and Intl.PluralRules
 stage: 2.7
 contributors: Eemeli Aro
+location: https://tc39.es/proposal-intl-keep-trailing-zeros/
 </pre>
 
 <emu-clause id="numberformat-objects" number="16">
@@ -260,7 +261,7 @@ contributors: Eemeli Aro
       <h1>
         PartitionNotationSubPattern (
           _numberFormat_: an Intl.NumberFormat,
-          _x_: <del>an Intl</del><ins>a</ins> mathematical value<del>,</del><ins> or ~negative-zero~.</ins>,
+          _x_: <del>an Intl mathematical value</del><ins>a mathematical value or ~negative-zero~</ins>,
           _n_: a String,
           _exponent_: an integer,
         ): a List of Records with fields [[Type]] (a String) and [[Value]] (a String)
@@ -372,8 +373,9 @@ contributors: Eemeli Aro
           1. Assert: _e_ &lt; 0.
           1. Set _m_ to the string-concatenation of *"0."*, -(_e_ + 1) occurrences of the code unit 0x0030 (DIGIT ZERO), and _m_.
           1. Let _int_ be 1.
-        1. If _m_ contains the code unit 0x002E (FULL STOP) and _maxPrecision_ > _minPrecision_, then
-          1. Let _cut_ be _maxPrecision_ - <del>_minPrecision_</del><ins>max(_stringDigitCount_, _minPrecision_)</ins>.
+        1. <ins>Let _resolvedMinPrecision_ be max(_minPrecision_, _stringDigitCount_).</ins>
+        1. If _m_ contains the code unit 0x002E (FULL STOP) and _maxPrecision_ > <del>_minPrecision_</del><ins>_resolvedMinPrecision_</ins>, then
+          1. Let _cut_ be _maxPrecision_ - <del>_minPrecision_</del><ins>_resolvedMinPrecision_</ins>.
           1. Repeat, while _cut_ > 0 and the last code unit of _m_ is 0x0030 (DIGIT ZERO),
             1. Remove the last code unit from _m_.
             1. Set _cut_ to _cut_ - 1.
@@ -413,18 +415,21 @@ contributors: Eemeli Aro
         1. If _f_ ≠ 0, then
           1. Let _k_ be the length of _m_.
           1. If _k_ ≤ _f_, then
-            1. Let _z_ be the String value consisting of _f_ + 1 - _k_ occurrences of the code unit 0x0030 (DIGIT ZERO).
+            1. <ins>Let _zn_ be _f_ + 1 - _k_.</ins>
+            1. Let _z_ be the String value consisting of <del>_f_ + 1 - _k_</del><ins>_zn_</ins> occurrences of the code unit 0x0030 (DIGIT ZERO).
             1. Set _m_ to the string-concatenation of _z_ and _m_.
             1. Set _k_ to _f_ + 1.
+          1. <ins>Else,</ins>
+            1. <ins>Let _zn_ be 0.</ins>
           1. Let _a_ be the first _k_ - _f_ code units of _m_, and let _b_ be the remaining _f_ code units of _m_.
           1. <del>Set _m_ to the string-concatenation of _a_, *"."*, and _b_.</del>
           1. Let _int_ be the length of _a_.
-          1. <ins>Let _cut_ be _maxFraction_ - max(_stringDigitCount_ - _int_, _minFraction_).</ins>
+          1. <ins>If _n_ = 0, let _sfc_ be _stringDigitCount_ - _int_; else let _sfc_ be _stringDigitCount_ - _int_ + _zn_.</ins>
+          1. <ins>Let _cut_ be _maxFraction_ - max(_sfc_, _minFraction_).</ins>
           1. <ins>Repeat, while _cut_ > 0 and the last code unit of _b_ is 0x0030 (DIGIT ZERO),</ins>
             1. <ins>Remove the last code unit from _b_.</ins>
             1. <ins>Set _cut_ to _cut_ - 1.</ins>
-          1. <ins>If _b_ is the empty String, set _m_ to _a_.</ins>
-          1. <ins>Else, set _m_ to the string-concatenation of _a_, *"."*, and _b_.</ins>
+          1. <ins>If _b_ is the empty String, set _m_ to _a_; else set _m_ to the string-concatenation of _a_, *"."*, and _b_.</ins>
         1. Else,
           1. Let _int_ be the length of _m_.
         1. <del>Let _cut_ be _maxFraction_ - _minFraction_.</del>
@@ -501,7 +506,7 @@ contributors: Eemeli Aro
         <ins class="block">
           <p>
             The conversion of a |StringNumericLiteral| to a mathematical value and a precision is similar overall to the determination of the NumericValue of a |NumericLiteral| (see <emu-xref href="#sec-literals-numeric-literals"></emu-xref>), but some of the details are different.
-            The result of StringIntlMV is a List value with two elements, a mathematical value and the count of decimal digits in the source text.
+            The result of StringIntlMV is a List value with two elements, a mathematical value and the count of significant decimal digits in the source text.
           </p>
         </ins>
       </emu-note>
@@ -534,30 +539,71 @@ contributors: Eemeli Aro
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: DecimalDigits `.` DecimalDigits? ExponentPart?</emu-grammar>
       <emu-alg>
-        1. Let _a_ be MV of the first |DecimalDigits|.
-        1. <ins>Let _m_ be the number of code points in the first |DecimalDigits|.</ins>
-        1. If the second |DecimalDigits| is present, then
-          1. Let _b_ be MV of the second |DecimalDigits|.
-          1. Let _n_ be the number of code points in the second |DecimalDigits|.
-        1. Else,
-          1. Let _b_ be 0.
-          1. Let _n_ be 0.
-        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
-        1. Return <ins>«</ins> (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup><ins>, _m_ + _n_ »</ins>.
+        1. <del>Let _a_ be MV of the first |DecimalDigits|.</del>
+        1. <del>If the second |DecimalDigits| is present, then</del>
+          1. <del>Let _b_ be MV of the second |DecimalDigits|.</del>
+          1. <del>Let _n_ be the number of code points in the second |DecimalDigits|.</del>
+        1. <del>Else,</del>
+          1. <del>Let _b_ be 0.</del>
+          1. <del>Let _n_ be 0.</del>
+        1. <ins>Let _intPart_ be the first |DecimalDigits|.</ins>
+        1. <ins>If the second |DecimalDigits| is present, let _fracPart_ be the second |DecimalDigits|; else let _fracPart_ be ~empty~.</ins>
+        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|<del>. Otherwise,</del><ins>; else</ins> let _e_ be 0.
+        1. Return <del>(_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup></del><ins>StringIntlMVFromParts(_intPart_, _fracPart_, _e_)</ins>.
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: `.` DecimalDigits ExponentPart?</emu-grammar>
       <emu-alg>
-        1. Let _b_ be MV of |DecimalDigits|.
-        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
-        1. Let _n_ be the number of code points in |DecimalDigits|.
-        1. Return <ins>«</ins> _b_ × 10<sup>_e_ - _n_</sup><ins>, _n_ ».</ins>
+        1. <del>Let _b_ be MV of |DecimalDigits|.</del>
+        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|<del>. Otherwise,</del><ins>; else</ins> let _e_ be 0.
+        1. <del>Let _n_ be the number of code points in |DecimalDigits|.</del>
+        1. Return <del>_b_ × 10<sup>_e_ - _n_</sup></del><ins>StringIntlMVFromParts(~empty~, |DecimalDigits|, _e_)</ins>.
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: DecimalDigits ExponentPart?</emu-grammar>
       <emu-alg>
-        1. Let _a_ be MV of |DecimalDigits|.
-        1. <ins>Let _m_ be the number of code points in |DecimalDigits|.</ins>
-        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|. Otherwise, let _e_ be 0.
-        1. Return <ins>«</ins> _a_ × 10<sup>_e_</sup><ins>, _m_ »</ins>.
+        1. <del>Let _a_ be MV of |DecimalDigits|.</del>
+        1. If |ExponentPart| is present, let _e_ be MV of |ExponentPart|<del>. Otherwise,</del><ins>; else</ins> let _e_ be 0.
+        1. Return <del>_a_ × 10<sup>_e_</sup></del><ins>StringIntlMVFromParts(|DecimalDigits|, ~empty~, _e_)</ins>.
+      </emu-alg>
+    </emu-clause>
+
+    <emu-clause id="sec-stringintlmvfromparts" type="abstract operation">
+      <h1>
+        <ins>
+          StringIntlMVFromParts (
+            _intPart_: a Parse Node or ~empty~,
+            _fracPart_: a Parse Node or ~empty~,
+            _e_: a mathematical value,
+          ): a List
+        </ins>
+      </h1>
+      <dl class="header">
+        <dt>description</dt>
+        <dd>
+          The returned List contains two values: a mathematical value corresponding to the source text, and the count of significant decimal digits in the source text.
+        </dd>
+      </dl>
+      <emu-alg>
+        1. If _intPart_ is ~empty~, then
+          1. Let _a_ be 0.
+          1. Let _m_ be 0.
+          1. Let _z_ be 0.
+        1. Else,
+          1. Let _a_ be MV of _intPart_.
+          1. Let _m_ be the number of code points in _intPart_.
+          1. Assert: _m_ > 0.
+          1. Let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in _intPart_.
+        1. If _fracPart_ is ~empty~, then
+          1. Let _b_ be 0.
+          1. Let _n_ be 0.
+        1. Else,
+          1. Let _b_ be MV of _fracPart_.
+          1. Let _n_ be the number of code points in _fracPart_.
+          1. Assert: _n_ > 0.
+          1. If _a_ = 0, then
+            1. Let _zn_ be the count of leading U+0030 (DIGIT ZERO) code points in _fracPart_.
+            1. Set _z_ to _z_ + _zn_.
+        1. If _a_ = 0 and _b_ = 0, return « 0, 1 + _n_ ».
+        1. Return « (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup>, _m_ + _n_ - _z_».
       </emu-alg>
     </emu-clause>
 
@@ -572,7 +618,7 @@ contributors: Eemeli Aro
         <dd>
           It returns _value_ converted to an <dfn id="intl-mathematical-value">Intl mathematical value</dfn>, <del>which</del><ins>a Record with two fields:</ins>
           <ins>[[Value]]</ins> is a mathematical value <del>together with</del><ins>or one of</ins> ~positive-infinity~, ~negative-infinity~, ~not-a-number~, <ins>or ~negative-zero~,</ins> and
-          <del>~negative-zero~</del><ins>[[StringDigitCount]] is an integer indicating the number of significant digits in _value_ when it is a String, or 0 otherwise</ins>.
+          <del>~negative-zero~</del><ins>[[StringDigitCount]] is an integer indicating the number of decimal digits in _value_ when it is a String (ignoring any exponent, and not counting leading zeros), or 0 otherwise</ins>.
           This abstract operation is similar to <emu-xref href="#sec-tonumeric"></emu-xref>, but <del>a mathematical value can be returned instead of a Number or BigInt, so that exact decimal values can be represented</del><ins>retains the full precision of numeric strings</ins>.
         </dd>
       </dl>
@@ -599,14 +645,13 @@ contributors: Eemeli Aro
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-infinity~.</del>
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub>, return ~positive-infinity~.</del>
           1. <ins>If _rounded_ is *+∞*<sub>𝔽</sub>, then</ins>
-            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-infinity~.</ins>
-            1. <ins>Else, set _intlMV_ to ~positive-infinity~.</ins>
+            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-infinity~; else set _intlMV_ to ~positive-infinity~.</ins>
             1. <ins>Set _stringDigitCount_ to 0.</ins>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-zero~.</del>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub>, return 0.</del>
-          1. <ins>If _rounded_ is *+0*<sub>𝔽</sub>, then</ins>
-            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-zero~.</ins>
-            1. <ins>Else, set _intlMV_ to 0.</ins>
+          1. <ins>Else if _rounded_ is *+0*<sub>𝔽</sub>, then</ins>
+            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-zero~; else set _intlMV_ to 0.</ins>
+            1. NOTE: The value of _stringDigitCount_ is retained.
         1. Return <del>_intlMV_</del><ins>the Record { [[Value]]: _intlMV_, [[StringDigitCount]]: _stringDigitCount_ }</ins>.
       </emu-alg>
     </emu-clause>
