@@ -113,6 +113,51 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
   <emu-clause id="sec-numberformat-abstracts">
     <h1>Abstract Operations for NumberFormat Objects</h1>
 
+    <emu-clause id="sec-intl-mv-records">
+      <h1><ins>Intl MV Records</ins></h1>
+      <p>An <dfn variants="Intl MV Records">Intl MV Record</dfn> is a Record value used to encapsulate a mathematical value together with additional information.</p>
+      <p>Intl MV Records have the fields listed in <emu-xref href="#table-intl-mv-record-fields"></emu-xref>.</p>
+      <emu-table id="table-intl-mv-record-fields" caption="Intl MV Record Fields">
+        <table>
+          <thead>
+            <tr>
+              <th>
+                Field Name
+              </th>
+              <th>
+                Value
+              </th>
+              <th>
+                Meaning
+              </th>
+            </tr>
+          </thead>
+          <tr>
+            <td>
+              [[Value]]
+            </td>
+            <td>
+              a mathematical value or one of ~positive-infinity~, ~negative-infinity~, ~not-a-number~, or ~negative-zero~
+            </td>
+            <td>
+              The value being formatted or selected on.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              [[StringDigitCount]]
+            </td>
+            <td>
+              a non-negative integer
+            </td>
+            <td>
+              The number of decimal digits in [[Value]] when it is derived from a String (ignoring any exponent, and not counting leading zeros), or 0 otherwise.
+            </td>
+          </tr>
+        </table>
+      </emu-table>
+    </emu-clause>
+
     <emu-clause id="sec-formatnumerictostring" oldids="sec-formatnumberstring" type="abstract operation" number="3">
       <h1>
         FormatNumericToString (
@@ -123,7 +168,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       </h1>
       <dl class="header">
         <dt>description</dt>
-        <dd>It rounds _x_ to an Intl mathematical value according to the internal slots of _intlObject_. The [[RoundedNumber]] field contains the rounded result value and the [[FormattedString]] field contains a String value representation of that result formatted according to the internal slots of _intlObject_.</dd>
+        <dd>It rounds _x_ to <del>an Intl</del><ins>a</ins> mathematical value<ins> or ~negative-zero~</ins> according to the internal slots of _intlObject_. The [[RoundedNumber]] field contains the rounded result value and the [[FormattedString]] field contains a String value representation of that result formatted according to the internal slots of _intlObject_.</dd>
       </dl>
       <emu-alg>
         1. Assert: _intlObject_ has [[RoundingMode]], [[RoundingType]], [[MinimumSignificantDigits]], [[MaximumSignificantDigits]], [[MinimumIntegerDigits]], [[MinimumFractionDigits]], [[MaximumFractionDigits]], [[RoundingIncrement]], and [[TrailingZeroDisplay]] internal slots.
@@ -171,7 +216,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       <h1>
         PartitionNumberPattern (
           _numberFormat_: an object initialized as a NumberFormat,
-          _x_: <ins>a mathematical value or</ins> an Intl mathematical value,
+          _x_: <del>an Intl mathematical value</del><ins>a mathematical value or an Intl MV Record</ins>,
         ): a List of Records with fields [[Type]] (a String) and [[Value]] (a String)
       </h1>
       <dl class="header">
@@ -180,7 +225,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       </dl>
 
       <emu-alg>
-        1. <ins>If _x_ is an Intl mathematical value, then</ins>
+        1. <ins>If _x_ is an Intl MV Record, then</ins>
           1. <ins>Let _stringDigitCount_ be _x_.[[StringDigitCount]].</ins>
           1. <ins>Set _x_ to _x_.[[Value]].</ins>
         1. <ins>Else,</ins>
@@ -312,7 +357,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       <h1>
         FormatNumeric (
           _numberFormat_: an Intl.NumberFormat,
-          _x_: <ins>a mathematical value or</ins> an Intl mathematical value,
+          _x_: <del>an Intl mathematical value</del><ins>a mathematical value or an Intl MV Record</ins>,
         ): a String
       </h1>
       <dl class="header">
@@ -505,14 +550,16 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
         </del>
         <ins class="block">
           <p>
-            The conversion of a |StringNumericLiteral| to a mathematical value and a precision is similar overall to the determination of the NumericValue of a |NumericLiteral| (see <emu-xref href="#sec-literals-numeric-literals"></emu-xref>), but some of the details are different.
-            The result of StringIntlMV is a List value with two elements, a mathematical value and the count of significant decimal digits in the source text.
+            The conversion of a |StringNumericLiteral| to a mathematical value
+            is similar overall to the determination of the NumericValue of a |NumericLiteral| (see <emu-xref href="#sec-literals-numeric-literals"></emu-xref>),
+            but some of the details are different, and additional information is retained.
+            The result of StringIntlMV is an Intl MV Record.
           </p>
         </ins>
       </emu-note>
       <emu-grammar>StringNumericLiteral ::: StrWhiteSpace?</emu-grammar>
       <emu-alg>
-        1. Return <del>0</del><ins>« 0, 0 »</ins>.
+        1. Return <del>0</del><ins>the Intl MV Record { [[Value]]: 0, [[StringDigitCount]]: 0 }</ins>.
       </emu-alg>
       <emu-grammar>StringNumericLiteral ::: StrWhiteSpace? StrNumericLiteral StrWhiteSpace?</emu-grammar>
       <emu-alg>
@@ -522,7 +569,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       <emu-alg>
         1. <del>Return MV of |NonDecimalIntegerLiteral|.</del>
         1. <ins>Let _i_ be MV of |NonDecimalIntegerLiteral|.</ins>
-        1. <ins>Return « _i_, 0 ».</ins>
+        1. <ins>Return the Intl MV Record { [[Value]]: _i_, [[StringDigitCount]]: 0 }.</ins>
       </emu-alg>
       <emu-grammar>StrDecimalLiteral ::: `-` StrUnsignedDecimalLiteral</emu-grammar>
       <emu-alg>
@@ -531,11 +578,11 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
         1. <ins>Let _n_ be the second element of _x_.</ins>
         1. If _a_ is 0, return <del>~negative-zero~</del><ins>« ~negative-zero~, _n_ »</ins>.
         1. If _a_ is ~positive-infinity~, return <del>~negative-infinity~</del><ins>« ~negative-infinity~, 0 »</ins>.
-        1. Return <del>-_a_</del><ins>« -_a_, _n_ »</ins>.
+        1. Return <del>-_a_</del><ins>the Intl MV Record { [[Value]]: -_a_, [[StringDigitCount]]: _n_ }</ins>.
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: `Infinity`</emu-grammar>
       <emu-alg>
-        1. Return <del>~positive-infinity~</del><ins>« ~positive-infinity~, 0 »</ins>.
+        1. Return <del>~positive-infinity~</del><ins>the Intl MV Record { [[Value]]: ~positive-infinity~, [[StringDigitCount]]: 0 }</ins>.
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: DecimalDigits `.` DecimalDigits? ExponentPart?</emu-grammar>
       <emu-alg>
@@ -573,14 +620,12 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
             _intPart_: a Parse Node or ~empty~,
             _fracPart_: a Parse Node or ~empty~,
             _e_: a mathematical value,
-          ): a List
+          ): an Intl MV Record
         </ins>
       </h1>
       <dl class="header">
         <dt>description</dt>
-        <dd>
-          The returned List contains two values: a mathematical value corresponding to the source text, and the count of significant decimal digits in the source text.
-        </dd>
+        <dd></dd>
       </dl>
       <emu-alg>
         1. If _intPart_ is ~empty~, then
@@ -603,7 +648,9 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
             1. Let _zn_ be the count of leading U+0030 (DIGIT ZERO) code points in _fracPart_.
             1. Set _z_ to _z_ + _zn_.
         1. If _a_ = 0 and _b_ = 0, return « 0, 1 + _n_ ».
-        1. Return « (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup>, _m_ + _n_ - _z_».
+        1. Let _value_ be (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup>.
+        1. Let _stringDigitCount_ be _m_ + _n_ - _z_.
+        1. Return the Intl MV Record { [[Value]]: _value_, [[StringDigitCount]]: _stringDigitCount_ }.
       </emu-alg>
     </emu-clause>
 
@@ -616,43 +663,41 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       <dl class="header">
         <dt>description</dt>
         <dd>
-          It returns _value_ converted to an <dfn id="intl-mathematical-value">Intl mathematical value</dfn>, <del>which</del><ins>a Record with two fields:</ins>
-          <ins>[[Value]]</ins> is a mathematical value <del>together with</del><ins>or one of</ins> ~positive-infinity~, ~negative-infinity~, ~not-a-number~, <ins>or ~negative-zero~,</ins> and
-          <del>~negative-zero~</del><ins>[[StringDigitCount]] is an integer indicating the number of decimal digits in _value_ when it is a String (ignoring any exponent, and not counting leading zeros), or 0 otherwise</ins>.
-          This abstract operation is similar to <emu-xref href="#sec-tonumeric"></emu-xref>, but <del>a mathematical value can be returned instead of a Number or BigInt, so that exact decimal values can be represented</del><ins>retains the full precision of numeric strings</ins>.
+          <del>It returns _value_ converted to an <dfn id="intl-mathematical-value">Intl mathematical value</dfn>, which is a mathematical value together with ~positive-infinity~, ~negative-infinity~, ~not-a-number~, and ~negative-zero~.</del>
+          This abstract operation is similar to <emu-xref href="#sec-tonumeric"></emu-xref>, but <del>a mathematical value can be returned instead of a Number or BigInt, so that exact decimal values can be represented</del><ins>it retains the full precision of numeric strings</ins>.
         </dd>
       </dl>
       <emu-alg>
         1. Let _primValue_ be ? ToPrimitive(_value_, ~number~).
-        1. If _primValue_ is a BigInt, return <del>ℝ(_primValue_)</del><ins>the Record { [[Value]]: ℝ(_primValue_), [[StringDigitCount]]: 0 }</ins>.
+        1. If _primValue_ is a BigInt, return <del>ℝ(_primValue_)</del><ins>the Intl MV Record { [[Value]]: ℝ(_primValue_), [[StringDigitCount]]: 0 }</ins>.
         1. If _primValue_ is a String, then
           1. Let _str_ be _primValue_.
         1. Else,
           1. Let _x_ be ? ToNumber(_primValue_).
-          1. If _x_ is *-0*<sub>𝔽</sub>, return <del>~negative-zero~</del><ins>the Record { [[Value]]: ~negative-zero~, [[StringDigitCount]]: 0 }</ins>.
+          1. If _x_ is *-0*<sub>𝔽</sub>, return <del>~negative-zero~</del><ins>the Intl MV Record { [[Value]]: ~negative-zero~, [[StringDigitCount]]: 0 }</ins>.
           1. Let _str_ be Number::toString(_x_, 10).
         1. Let _text_ be StringToCodePoints(_str_).
         1. Let _literal_ be ParseText(_text_, |StringNumericLiteral|).
-        1. If _literal_ is a List of errors, return <del>~not-a-number~</del><ins>the Record { [[Value]]: ~not-a-number~, [[StringDigitCount]]: 0 }</ins>.
+        1. If _literal_ is a List of errors, return <del>~not-a-number~</del><ins>the Intl MV Record { [[Value]]: ~not-a-number~, [[StringDigitCount]]: 0 }</ins>.
         1. Let <del>_intlMV_</del><ins>_stringData_</ins> be the StringIntlMV of _literal_.
-        1. <ins>Let _intlMV_ be _stringData_[0].</ins>
+        1. <ins>Let _value_ be _stringData_.[[Value]].</ins>
         1. <ins>If _primValue_ is a String, then</ins>
-          1. <ins>Let _stringDigitCount_ be _stringData_[1].</ins>
+          1. <ins>Let _stringDigitCount_ be _stringData_.[[StringDigitCount]].</ins>
         1. <ins>Else,</ins>
           1. <ins>Let _stringDigitCount_ be 0.</ins>
-        1. If _intlMV_ is a mathematical value, then
-          1. Let _rounded_ be RoundMVResult(abs(_intlMV_)).
+        1. If <del>_intlMV_</del><ins>_value_</ins> is a mathematical value, then
+          1. Let _rounded_ be RoundMVResult(abs(<del>_intlMV_</del><ins>_value_</ins>)).
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-infinity~.</del>
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub>, return ~positive-infinity~.</del>
           1. <ins>If _rounded_ is *+∞*<sub>𝔽</sub>, then</ins>
-            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-infinity~; else set _intlMV_ to ~positive-infinity~.</ins>
+            1. <ins>If _value_ &lt; 0, set _value_ to ~negative-infinity~; else set _value_ to ~positive-infinity~.</ins>
             1. <ins>Set _stringDigitCount_ to 0.</ins>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-zero~.</del>
           1. <del>If _rounded_ is *+0*<sub>𝔽</sub>, return 0.</del>
           1. <ins>Else if _rounded_ is *+0*<sub>𝔽</sub>, then</ins>
-            1. <ins>If _intlMV_ &lt; 0, set _intlMV_ to ~negative-zero~; else set _intlMV_ to 0.</ins>
+            1. <ins>If _value_ &lt; 0, set _value_ to ~negative-zero~; else set _value_ to 0.</ins>
             1. NOTE: The value of _stringDigitCount_ is retained.
-        1. Return <del>_intlMV_</del><ins>the Record { [[Value]]: _intlMV_, [[StringDigitCount]]: _stringDigitCount_ }</ins>.
+        1. Return <del>_intlMV_</del><ins>the Intl MV Record { [[Value]]: _value_, [[StringDigitCount]]: _stringDigitCount_ }</ins>.
       </emu-alg>
     </emu-clause>
 
@@ -660,8 +705,8 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       <h1>
         PartitionNumberRangePattern (
           _numberFormat_: an Intl.NumberFormat,
-          _x_: an Intl mathematical value,
-          _y_: an Intl mathematical value,
+          _x_: an <del>Intl mathematical value</del><ins>Intl MV Record</ins>,
+          _y_: an <del>mIntl athematical value</del><ins>Intl MV Record</ins>,
         ): either a normal completion containing a List of Records with fields [[Type]] (a String), [[Value]] (a String), and [[Source]] (a String), or a throw completion
       </h1>
       <dl class="header">
@@ -710,7 +755,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
         ResolvePlural (
           _pluralRules_: an Intl.PluralRules,
           <del>_n_: an Intl mathematical value,</del>
-          <ins>_intlMV_: an Intl mathematical value,</ins>
+          <ins>_intlMV_: an Intl MV Record,</ins>
         ): a Record with fields [[PluralCategory]] (*"zero"*, *"one"*, *"two"*, *"few"*, *"many"*, or *"other"*) and [[FormattedString]] (a String)
       </h1>
       <dl class="header">
@@ -744,8 +789,8 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       <h1>
         ResolvePluralRange (
           _pluralRules_: an Intl.PluralRules,
-          _x_: an Intl mathematical value,
-          _y_: an Intl mathematical value,
+          _x_: an <del>Intl mathematical value</del><ins>Intl MV Record</ins>,
+          _y_: an <del>Intl mathematical value</del><ins>Intl MV Record</ins>,
         ): either a normal completion containing either *"zero"*, *"one"*, *"two"*, *"few"*, *"many"*, or *"other"*, or a throw completion
       </h1>
       <dl class="header">
