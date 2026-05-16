@@ -151,7 +151,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
               a non-negative integer
             </td>
             <td>
-              The number of decimal digits in [[Value]] when it is derived from a String (ignoring any exponent, and not counting leading zeros), or 0 otherwise.
+              The number of decimal digits in [[Value]] when it is derived from a String (before applying its exponent part, and ignoring leading zeros), or 0 otherwise.
             </td>
           </tr>
         </table>
@@ -576,8 +576,8 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
         1. Let <del>_a_</del><ins>_x_</ins> be StringIntlMV of |StrUnsignedDecimalLiteral|.
         1. <ins>Let _a_ be the first element of _x_.</ins>
         1. <ins>Let _n_ be the second element of _x_.</ins>
-        1. If _a_ is 0, return <del>~negative-zero~</del><ins>« ~negative-zero~, _n_ »</ins>.
-        1. If _a_ is ~positive-infinity~, return <del>~negative-infinity~</del><ins>« ~negative-infinity~, 0 »</ins>.
+        1. If _a_ is 0, return <del>~negative-zero~</del><ins>the Intl MV Record { [[Value]]: ~negative-zero~, [[StringDigitCount]]: _n_ }</ins>.
+        1. If _a_ is ~positive-infinity~, return <del>~negative-infinity~</del><ins>the Intl MV Record { [[Value]]: ~negative-infinity~, [[StringDigitCount]]: 0 }</ins>.
         1. Return <del>-_a_</del><ins>the Intl MV Record { [[Value]]: -_a_, [[StringDigitCount]]: _n_ }</ins>.
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: `Infinity`</emu-grammar>
@@ -706,7 +706,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
         PartitionNumberRangePattern (
           _numberFormat_: an Intl.NumberFormat,
           _x_: an <del>Intl mathematical value</del><ins>Intl MV Record</ins>,
-          _y_: an <del>mIntl athematical value</del><ins>Intl MV Record</ins>,
+          _y_: an <del>Intl mathematical value</del><ins>Intl MV Record</ins>,
         ): either a normal completion containing a List of Records with fields [[Type]] (a String), [[Value]] (a String), and [[Source]] (a String), or a throw completion
       </h1>
       <dl class="header">
