@@ -113,50 +113,53 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
   <emu-clause id="sec-numberformat-abstracts">
     <h1>Abstract Operations for NumberFormat Objects</h1>
 
-    <emu-clause id="sec-intl-mv-records">
-      <h1><ins>Intl MV Records</ins></h1>
-      <p>An <dfn variants="Intl MV Records">Intl MV Record</dfn> is a Record value used to encapsulate a mathematical value together with additional information.</p>
-      <p>Intl MV Records have the fields listed in <emu-xref href="#table-intl-mv-record-fields"></emu-xref>.</p>
-      <emu-table id="table-intl-mv-record-fields" caption="Intl MV Record Fields">
-        <table>
-          <thead>
+    <ins class="block">
+
+      <emu-clause id="sec-intl-mv-records">
+        <h1><ins>Intl MV Records</ins></h1>
+        <p>An <dfn variants="Intl MV Records">Intl MV Record</dfn> is a Record value used to encapsulate a mathematical value together with additional information.</p>
+        <p>Intl MV Records have the fields listed in <emu-xref href="#table-intl-mv-record-fields"></emu-xref>.</p>
+        <emu-table id="table-intl-mv-record-fields" caption="Intl MV Record Fields">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Field Name
+                </th>
+                <th>
+                  Value
+                </th>
+                <th>
+                  Meaning
+                </th>
+              </tr>
+            </thead>
             <tr>
-              <th>
-                Field Name
-              </th>
-              <th>
-                Value
-              </th>
-              <th>
-                Meaning
-              </th>
+              <td>
+                [[Value]]
+              </td>
+              <td>
+                a mathematical value or one of ~positive-infinity~, ~negative-infinity~, ~not-a-number~, or ~negative-zero~
+              </td>
+              <td>
+                The value being formatted or selected on.
+              </td>
             </tr>
-          </thead>
-          <tr>
-            <td>
-              [[Value]]
-            </td>
-            <td>
-              a mathematical value or one of ~positive-infinity~, ~negative-infinity~, ~not-a-number~, or ~negative-zero~
-            </td>
-            <td>
-              The value being formatted or selected on.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              [[StringDigitCount]]
-            </td>
-            <td>
-              a non-negative integer
-            </td>
-            <td>
-              The number of decimal digits in [[Value]] when it is derived from a String (before applying its exponent part, and ignoring leading zeros), or 0 otherwise.
-            </td>
-          </tr>
-        </table>
-      </emu-table>
-    </emu-clause>
+            <tr>
+              <td>
+                [[StringDigitCount]]
+              </td>
+              <td>
+                a non-negative integer
+              </td>
+              <td>
+                The number of decimal digits in [[Value]] when it is derived from a String (before applying its exponent part, and ignoring leading zeros), or 0 otherwise.
+              </td>
+            </tr>
+          </table>
+        </emu-table>
+      </emu-clause>
+    </ins>
 
     <emu-clause id="sec-formatnumerictostring" oldids="sec-formatnumberstring" type="abstract operation" number="3">
       <h1>
@@ -613,46 +616,47 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       </emu-alg>
     </emu-clause>
 
-    <emu-clause id="sec-stringintlmvfromparts" type="abstract operation">
-      <h1>
-        <ins>
-          StringIntlMVFromParts (
+    <ins class="block">
+
+      <emu-clause id="sec-stringintlmvfromparts" type="abstract operation">
+        <h1>
+          <ins>StringIntlMVFromParts (
             _intPart_: a Parse Node or ~empty~,
             _fracPart_: a Parse Node or ~empty~,
             _e_: a mathematical value,
-          ): an Intl MV Record
-        </ins>
-      </h1>
-      <dl class="header">
-        <dt>description</dt>
-        <dd></dd>
-      </dl>
-      <emu-alg>
-        1. If _intPart_ is ~empty~, then
-          1. Let _a_ be 0.
-          1. Let _m_ be 0.
-          1. Let _z_ be 0.
-        1. Else,
-          1. Let _a_ be MV of _intPart_.
-          1. Let _m_ be the number of code points in _intPart_.
-          1. Assert: _m_ > 0.
-          1. Let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in _intPart_.
-        1. If _fracPart_ is ~empty~, then
-          1. Let _b_ be 0.
-          1. Let _n_ be 0.
-        1. Else,
-          1. Let _b_ be MV of _fracPart_.
-          1. Let _n_ be the number of code points in _fracPart_.
-          1. Assert: _n_ > 0.
-          1. If _a_ = 0, then
-            1. Let _zn_ be the count of leading U+0030 (DIGIT ZERO) code points in _fracPart_.
-            1. Set _z_ to _z_ + _zn_.
-        1. If _a_ = 0 and _b_ = 0, return « 0, 1 + _n_ ».
-        1. Let _value_ be (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup>.
-        1. Let _stringDigitCount_ be _m_ + _n_ - _z_.
-        1. Return the Intl MV Record { [[Value]]: _value_, [[StringDigitCount]]: _stringDigitCount_ }.
-      </emu-alg>
-    </emu-clause>
+          ): an Intl MV Record</ins>
+        </h1>
+        <dl class="header">
+          <dt>description</dt>
+          <dd></dd>
+        </dl>
+        <emu-alg>
+          1. If _intPart_ is ~empty~, then
+            1. Let _a_ be 0.
+            1. Let _m_ be 0.
+            1. Let _z_ be 0.
+          1. Else,
+            1. Let _a_ be MV of _intPart_.
+            1. Let _m_ be the number of code points in _intPart_.
+            1. Assert: _m_ > 0.
+            1. Let _z_ be the count of leading U+0030 (DIGIT ZERO) code points in _intPart_.
+          1. If _fracPart_ is ~empty~, then
+            1. Let _b_ be 0.
+            1. Let _n_ be 0.
+          1. Else,
+            1. Let _b_ be MV of _fracPart_.
+            1. Let _n_ be the number of code points in _fracPart_.
+            1. Assert: _n_ > 0.
+            1. If _a_ = 0, then
+              1. Let _zn_ be the count of leading U+0030 (DIGIT ZERO) code points in _fracPart_.
+              1. Set _z_ to _z_ + _zn_.
+          1. If _a_ = 0 and _b_ = 0, return « 0, 1 + _n_ ».
+          1. Let _value_ be (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup>.
+          1. Let _stringDigitCount_ be _m_ + _n_ - _z_.
+          1. Return the Intl MV Record { [[Value]]: _value_, [[StringDigitCount]]: _stringDigitCount_ }.
+        </emu-alg>
+      </emu-clause>
+    </ins>
 
     <emu-clause id="sec-tointlmathematicalvalue" type="abstract operation">
       <h1>
