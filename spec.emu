@@ -158,7 +158,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
             </tr>
           <tr>
             <td>
-              [[MVFractionDigitCount]]
+              [[StringFractionDigitCount]]
             </td>
             <td>
               a non-negative integer
@@ -178,7 +178,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
           _intlObject_: an Object,
           _x_: a mathematical value or ~negative-zero~,
           <ins>_stringDigitCount_: an integer,</ins>
-          <ins>_mvFractionDigitCount_: an integer,</ins>
+          <ins>_stringFractionDigitCount_: an integer,</ins>
         ): a Record with fields [[RoundedNumber]] (a mathematical value or ~negative-zero~) and [[FormattedString]] (a String)
       </h1>
       <dl class="header">
@@ -197,15 +197,15 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
             1. Set _x_ to -_x_.
         1. <ins>If _intlObject_.[[TrailingZeroDisplay]] is *"stripToMinimum"*, then</ins>
           1. <ins>Set _stringDigitCount_ to 0.</ins>
-          1. <ins>Set _mvFractionDigitCount_ to 0.</ins>
+          1. <ins>Set _stringFractionDigitCount_ to 0.</ins>
         1. Let _unsignedRoundingMode_ be GetUnsignedRoundingMode(_intlObject_.[[RoundingMode]], _sign_).
         1. If _intlObject_.[[RoundingType]] is ~significant-digits~, then
-          1. Let _result_ be ToRawPrecision(_x_, <ins>_stringDigitCount_, _mvFractionDigitCount_,</ins> _intlObject_.[[MinimumSignificantDigits]], _intlObject_.[[MaximumSignificantDigits]], _unsignedRoundingMode_).
+          1. Let _result_ be ToRawPrecision(_x_, <ins>_stringDigitCount_, _stringFractionDigitCount_,</ins> _intlObject_.[[MinimumSignificantDigits]], _intlObject_.[[MaximumSignificantDigits]], _unsignedRoundingMode_).
         1. Else if _intlObject_.[[RoundingType]] is ~fraction-digits~, then
-          1. Let _result_ be ToRawFixed(_x_, <ins>_stringDigitCount_, _mvFractionDigitCount_,</ins> _intlObject_.[[MinimumFractionDigits]], _intlObject_.[[MaximumFractionDigits]], _intlObject_.[[RoundingIncrement]], _unsignedRoundingMode_).
+          1. Let _result_ be ToRawFixed(_x_, <ins>_stringDigitCount_, _stringFractionDigitCount_,</ins> _intlObject_.[[MinimumFractionDigits]], _intlObject_.[[MaximumFractionDigits]], _intlObject_.[[RoundingIncrement]], _unsignedRoundingMode_).
         1. Else,
-          1. Let _sResult_ be ToRawPrecision(_x_, <ins>_stringDigitCount_, _mvFractionDigitCount_,</ins> _intlObject_.[[MinimumSignificantDigits]], _intlObject_.[[MaximumSignificantDigits]], _unsignedRoundingMode_).
-          1. Let _fResult_ be ToRawFixed(_x_, <ins>_stringDigitCount_, _mvFractionDigitCount_,</ins> _intlObject_.[[MinimumFractionDigits]], _intlObject_.[[MaximumFractionDigits]], _intlObject_.[[RoundingIncrement]], _unsignedRoundingMode_).
+          1. Let _sResult_ be ToRawPrecision(_x_, <ins>_stringDigitCount_, _stringFractionDigitCount_,</ins> _intlObject_.[[MinimumSignificantDigits]], _intlObject_.[[MaximumSignificantDigits]], _unsignedRoundingMode_).
+          1. Let _fResult_ be ToRawFixed(_x_, <ins>_stringDigitCount_, _stringFractionDigitCount_,</ins> _intlObject_.[[MinimumFractionDigits]], _intlObject_.[[MaximumFractionDigits]], _intlObject_.[[RoundingIncrement]], _unsignedRoundingMode_).
           1. If _fResult_.[[RoundingMagnitude]] &lt; _sResult_.[[RoundingMagnitude]], let _fixedIsMorePrecise_ be *true*; else let _fixedIsMorePrecise_ be *false*.
           1. If _intlObject_.[[RoundingType]] is ~more-precision~ and _fixedIsMorePrecise_ is *true*, then
             1. Let _result_ be _fResult_.
@@ -244,12 +244,12 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       <emu-alg>
         1. <ins>If _x_ is an Intl MV Record, then</ins>
           1. <ins>Let _stringDigitCount_ be _x_.[[StringDigitCount]].</ins>
-          1. <ins>Let _mvFractionDigitCount_ be _x_.[[MVFractionDigitCount]].</ins>
+          1. <ins>Let _stringFractionDigitCount_ be _x_.[[StringFractionDigitCount]].</ins>
           1. <ins>Set _x_ to _x_.[[Value]].</ins>
         1. <ins>Else,</ins>
           1. <ins>Assert: _x_ is a mathematical value.</ins>
           1. <ins>Let _stringDigitCount_ be 0.</ins>
-          1. <ins>Let _mvFractionDigitCount_ be 0.</ins>
+          1. <ins>Let _stringFractionDigitCount_ be 0.</ins>
         1. Let _exponent_ be 0.
         1. If _x_ is ~not-a-number~, then
           1. Let _n_ be an ILD String value indicating the *NaN* value.
@@ -263,7 +263,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
             1. If _numberFormat_.[[Style]] is *"percent"*, set _x_ <del>be</del><ins>to</ins> 100 × _x_.
             1. Set _exponent_ to ComputeExponent(_numberFormat_, _x_).
             1. Set _x_ to _x_ × 10<sup>-_exponent_</sup>.
-          1. Let _formatNumberResult_ be FormatNumericToString(_numberFormat_, _x_<ins>, _stringDigitCount_, _mvFractionDigitCount_</ins>).
+          1. Let _formatNumberResult_ be FormatNumericToString(_numberFormat_, _x_<ins>, _stringDigitCount_, _stringFractionDigitCount_</ins>).
           1. Let _n_ be _formatNumberResult_.[[FormattedString]].
           1. Set _x_ to _formatNumberResult_.[[RoundedNumber]].
         1. Let _pattern_ be GetNumberFormatPattern(_numberFormat_, _x_).
@@ -395,7 +395,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
         ToRawPrecision (
           _x_: a non-negative mathematical value,
           <ins>_stringDigitCount_: an integer,</ins>
-          <ins>_mvFractionDigitCount_: an integer,</ins>
+          <ins>_stringFractionDigitCount_: an integer,</ins>
           _minPrecision_: an integer in the inclusive interval from 1 to 21,
           _maxPrecision_: an integer in the inclusive interval from 1 to 21,
           _unsignedRoundingMode_: a specification type from the Unsigned Rounding Mode column of <emu-xref href="#table-intl-unsigned-rounding-modes"></emu-xref>, or *undefined*,
@@ -439,7 +439,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
           1. Assert: _e_ &lt; 0.
           1. Set _m_ to the string-concatenation of *"0."*, -(_e_ + 1) occurrences of the code unit 0x0030 (DIGIT ZERO), and _m_.
           1. Let _int_ be 1.
-        1. <ins>If _isZero_ is *true*, let _resolvedMinPrecision_ be max(_minPrecision_, _mvFractionDigitCount_ + 1); else let _resolvedMinPrecision_ be max(_minPrecision_, _stringDigitCount_).</ins>
+        1. <ins>If _isZero_ is *true*, let _resolvedMinPrecision_ be max(_minPrecision_, _stringFractionDigitCount_ + 1); else let _resolvedMinPrecision_ be max(_minPrecision_, _stringDigitCount_).</ins>
         1. If _m_ contains the code unit 0x002E (FULL STOP) and _maxPrecision_ > <del>_minPrecision_</del><ins>_resolvedMinPrecision_</ins>, then
           1. Let _cut_ be _maxPrecision_ - <del>_minPrecision_</del><ins>_resolvedMinPrecision_</ins>.
           1. Repeat, while _cut_ > 0 and the last code unit of _m_ is 0x0030 (DIGIT ZERO),
@@ -456,7 +456,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
         ToRawFixed (
           _x_: a non-negative mathematical value,
           <ins>_stringDigitCount_: an integer,</ins>
-          <ins>_mvFractionDigitCount_: an integer,</ins>
+          <ins>_stringFractionDigitCount_: an integer,</ins>
           _minFraction_: an integer in the inclusive interval from 0 to 100,
           _maxFraction_: an integer in the inclusive interval from 0 to 100,
           _roundingIncrement_: an integer,
@@ -492,7 +492,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
           1. <del>Set _m_ to the string-concatenation of _a_, *"."*, and _b_.</del>
           1. Let _int_ be the length of _a_.
           1. <ins>If every code unit of _m_ is 0x0030 (DIGIT ZERO), then</ins>
-            1. <ins>Let _sfc_ be _mvFractionDigitCount_.</ins>
+            1. <ins>Let _sfc_ be _stringFractionDigitCount_.</ins>
           1. <ins>Else if _n_ = 0, then</ins>
             1. <ins>Let _sfc_ be _stringDigitCount_ - _int_.</ins>
           1. <ins>Else,</ins>
@@ -586,7 +586,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       </emu-note>
       <emu-grammar>StringNumericLiteral ::: StrWhiteSpace?</emu-grammar>
       <emu-alg>
-        1. Return <del>0</del><ins>the Intl MV Record { [[Value]]: 0, [[StringDigitCount]]: 0, [[MVFractionDigitCount]]: 0 }</ins>.
+        1. Return <del>0</del><ins>the Intl MV Record { [[Value]]: 0, [[StringDigitCount]]: 0, [[StringFractionDigitCount]]: 0 }</ins>.
       </emu-alg>
       <emu-grammar>StringNumericLiteral ::: StrWhiteSpace? StrNumericLiteral StrWhiteSpace?</emu-grammar>
       <emu-alg>
@@ -596,7 +596,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       <emu-alg>
         1. <del>Return MV of |NonDecimalIntegerLiteral|.</del>
         1. <ins>Let _i_ be MV of |NonDecimalIntegerLiteral|.</ins>
-        1. <ins>Return the Intl MV Record { [[Value]]: _i_, [[StringDigitCount]]: 0, [[MVFractionDigitCount]]: 0 }.</ins>
+        1. <ins>Return the Intl MV Record { [[Value]]: _i_, [[StringDigitCount]]: 0, [[StringFractionDigitCount]]: 0 }.</ins>
       </emu-alg>
       <emu-grammar>StrDecimalLiteral ::: `-` StrUnsignedDecimalLiteral</emu-grammar>
       <emu-alg>
@@ -609,7 +609,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: `Infinity`</emu-grammar>
       <emu-alg>
-        1. Return <del>~positive-infinity~</del><ins>the Intl MV Record { [[Value]]: ~positive-infinity~, [[StringDigitCount]]: 0, [[MVFractionDigitCount]]: 0 }</ins>.
+        1. Return <del>~positive-infinity~</del><ins>the Intl MV Record { [[Value]]: ~positive-infinity~, [[StringDigitCount]]: 0, [[StringFractionDigitCount]]: 0 }</ins>.
       </emu-alg>
       <emu-grammar>StrUnsignedDecimalLiteral ::: DecimalDigits `.` DecimalDigits? ExponentPart?</emu-grammar>
       <emu-alg>
@@ -677,8 +677,8 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
           1. If _a_ = 0 and _b_ = 0, return « 0, 1 + _n_ ».
           1. Let _value_ be (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup>.
           1. Let _stringDigitCount_ be _m_ + _n_ - _z_.
-          1. Let _mvFractionDigitCount_ be max(0, _n_ - _e_).
-          1. Return the Intl MV Record { [[Value]]: _value_, [[StringDigitCount]]: _stringDigitCount_, [[MVFractionDigitCount]]: _mvFractionDigitCount_ }.
+          1. Let _stringFractionDigitCount_ be max(0, _n_ - _e_).
+          1. Return the Intl MV Record { [[Value]]: _value_, [[StringDigitCount]]: _stringDigitCount_, [[StringFractionDigitCount]]: _stringFractionDigitCount_ }.
         </emu-alg>
       </emu-clause>
     </ins>
@@ -698,24 +698,24 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
       </dl>
       <emu-alg>
         1. Let _primValue_ be ? ToPrimitive(_value_, ~number~).
-        1. If _primValue_ is a BigInt, return <del>ℝ(_primValue_)</del><ins>the Intl MV Record { [[Value]]: ℝ(_primValue_), [[StringDigitCount]]: 0, [[MVFractionDigitCount]]: 0 }</ins>.
+        1. If _primValue_ is a BigInt, return <del>ℝ(_primValue_)</del><ins>the Intl MV Record { [[Value]]: ℝ(_primValue_), [[StringDigitCount]]: 0, [[StringFractionDigitCount]]: 0 }</ins>.
         1. If _primValue_ is a String, then
           1. Let _str_ be _primValue_.
         1. Else,
           1. Let _x_ be ? ToNumber(_primValue_).
-          1. If _x_ is *-0*<sub>𝔽</sub>, return <del>~negative-zero~</del><ins>the Intl MV Record { [[Value]]: ~negative-zero~, [[StringDigitCount]]: 0, [[MVFractionDigitCount]]: 0 }</ins>.
+          1. If _x_ is *-0*<sub>𝔽</sub>, return <del>~negative-zero~</del><ins>the Intl MV Record { [[Value]]: ~negative-zero~, [[StringDigitCount]]: 0, [[StringFractionDigitCount]]: 0 }</ins>.
           1. Let _str_ be Number::toString(_x_, 10).
         1. Let _text_ be StringToCodePoints(_str_).
         1. Let _literal_ be ParseText(_text_, |StringNumericLiteral|).
-        1. If _literal_ is a List of errors, return <del>~not-a-number~</del><ins>the Intl MV Record { [[Value]]: ~not-a-number~, [[StringDigitCount]]: 0, [[MVFractionDigitCount]]: 0 }</ins>.
+        1. If _literal_ is a List of errors, return <del>~not-a-number~</del><ins>the Intl MV Record { [[Value]]: ~not-a-number~, [[StringDigitCount]]: 0, [[StringFractionDigitCount]]: 0 }</ins>.
         1. Let <del>_intlMV_</del><ins>_stringData_</ins> be the StringIntlMV of _literal_.
         1. <ins>Let _value_ be _stringData_.[[Value]].</ins>
         1. <ins>If _primValue_ is a String, then</ins>
           1. <ins>Let _stringDigitCount_ be _stringData_.[[StringDigitCount]].</ins>
-          1. <ins>Let _mvFractionDigitCount_ be _stringData_.[[MVFractionDigitCount]].</ins>
+          1. <ins>Let _stringFractionDigitCount_ be _stringData_.[[StringFractionDigitCount]].</ins>
         1. <ins>Else,</ins>
           1. <ins>Let _stringDigitCount_ be 0.</ins>
-          1. <ins>Let _mvFractionDigitCount_ be 0.</ins>
+          1. <ins>Let _stringFractionDigitCount_ be 0.</ins>
         1. If <del>_intlMV_</del><ins>_value_</ins> is a mathematical value, then
           1. Let _rounded_ be RoundMVResult(abs(<del>_intlMV_</del><ins>_value_</ins>)).
           1. <del>If _rounded_ is *+∞*<sub>𝔽</sub> and _intlMV_ &lt; 0, return ~negative-infinity~.</del>
@@ -728,7 +728,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
           1. <ins>Else if _rounded_ is *+0*<sub>𝔽</sub>, then</ins>
             1. <ins>If _value_ &lt; 0, set _value_ to ~negative-zero~; else set _value_ to 0.</ins>
             1. NOTE: The value of _stringDigitCount_ is retained.
-        1. Return <del>_intlMV_</del><ins>the Intl MV Record { [[Value]]: _value_, [[StringDigitCount]]: _stringDigitCount_, [[MVFractionDigitCount]]: _mvFractionDigitCount_ }</ins>.
+        1. Return <del>_intlMV_</del><ins>the Intl MV Record { [[Value]]: _value_, [[StringDigitCount]]: _stringDigitCount_, [[StringFractionDigitCount]]: _stringFractionDigitCount_ }</ins>.
       </emu-alg>
     </emu-clause>
 
@@ -805,8 +805,8 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
           1. Let _s_ be an ILD String value indicating negative infinity.
           1. Return the Record { [[PluralCategory]]: *"other"*, [[FormattedString]]: _s_ }.
         1. <ins>Let _stringDigitCount_ be _intlMV_.[[StringDigitCount]].</ins>
-        1. <ins>Let _mvFractionDigitCount_ be _intlMV_.[[MVFractionDigitCount]].</ins>
-        1. Let _res_ be FormatNumericToString(_pluralRules_, _n_<ins>, _stringDigitCount_, _mvFractionDigitCount_</ins>).
+        1. <ins>Let _stringFractionDigitCount_ be _intlMV_.[[StringFractionDigitCount]].</ins>
+        1. Let _res_ be FormatNumericToString(_pluralRules_, _n_<ins>, _stringDigitCount_, _stringFractionDigitCount_</ins>).
         1. Let _s_ be _res_.[[FormattedString]].
         1. Let _locale_ be _pluralRules_.[[Locale]].
         1. Let _type_ be _pluralRules_.[[Type]].
