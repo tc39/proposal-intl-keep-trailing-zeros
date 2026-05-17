@@ -674,9 +674,8 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
             1. If _a_ = 0, then
               1. Let _zn_ be the count of leading U+0030 (DIGIT ZERO) code points in _fracPart_.
               1. Set _z_ to _z_ + _zn_.
-          1. If _a_ = 0 and _b_ = 0, return « 0, 1 + _n_ ».
           1. Let _value_ be (_a_ + (_b_ × 10<sup>-_n_</sup>)) × 10<sup>_e_</sup>.
-          1. Let _stringDigitCount_ be _m_ + _n_ - _z_.
+          1. If _a_ = 0 and _b_ = 0, let _stringDigitCount_ be 1 + _n_; else let _stringDigitCount_ be _m_ + _n_ - _z_.
           1. Let _stringFractionDigitCount_ be max(0, _n_ - _e_).
           1. Return the Intl MV Record { [[Value]]: _value_, [[StringDigitCount]]: _stringDigitCount_, [[StringFractionDigitCount]]: _stringFractionDigitCount_ }.
         </emu-alg>
