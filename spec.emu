@@ -5,7 +5,7 @@
 <script src="./spec.js"></script>
 <pre class="metadata">
 title: Keep trailing zeros in Intl.NumberFormat and Intl.PluralRules
-stage: 2.7
+stage: 3
 contributors: Eemeli Aro
 location: https://tc39.es/proposal-intl-keep-trailing-zeros/
 </pre>
