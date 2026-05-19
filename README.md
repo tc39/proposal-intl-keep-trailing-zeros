@@ -2,9 +2,10 @@
 
 ## Status
 
+Stage: 3
+
 Champion: Eemeli Aro
 
-Stage: 2.7  
 Reviewers: Richard Gibson ([#7](https://github.com/tc39/proposal-intl-keep-trailing-zeros/issues/7)) and Shane Carr ([#8](https://github.com/tc39/proposal-intl-keep-trailing-zeros/issues/8))
 
 Presentations:
@@ -12,6 +13,9 @@ Presentations:
 - [For Stage 2/2.7](https://docs.google.com/presentation/d/1hKJFrDfiGeqPWm51fQFQb4M4CeYm3ultB7Opef1BVuE/edit?usp=sharing) (2025.07)
 - [Stage 2.7 Update](https://docs.google.com/presentation/d/1_xv96P0GaV2GZx4eevGd5GH9gvEBPbu9In6JA1WOOPg/edit?usp=sharing) (2025.11)
 - [For Stage 3](https://docs.google.com/presentation/d/13zyaDAuriW2A4pwzklf0EZhOSUUmWqZxyIjzCcjWkXU/edit?usp=sharing) (2026.03)
+- [For Stage 3](https://docs.google.com/presentation/d/1KOZTgBj7vTCK8eZucAPfeqvvlnKdU4_Sc35bp3zVoKI/edit?usp=sharing) (2026.05)
+
+Polyfill: [eemeli/formatjs-for-keep-trailing-zeros](https://github.com/eemeli/formatjs-for-keep-trailing-zeros)
 
 ## Motivation
 
