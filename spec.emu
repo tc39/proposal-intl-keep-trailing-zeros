@@ -115,7 +115,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
 
     <ins class="block">
 
-      <emu-clause id="sec-intl-mv-records">
+      <emu-clause id="sec-intl-mv-records" oldids="intl-mathematical-value">
         <h1><ins>Intl MV Records</ins></h1>
         <p>An <dfn variants="Intl MV Records">Intl MV Record</dfn> is a Record value used to encapsulate a mathematical value together with additional information.</p>
         <p>Intl MV Records have the fields listed in <emu-xref href="#table-intl-mv-record-fields"></emu-xref>.</p>
@@ -683,11 +683,20 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
     </ins>
 
     <emu-clause id="sec-tointlmathematicalvalue" type="abstract operation">
+      <del class="block">
       <h1>
         ToIntlMathematicalValue (
           _value_: an ECMAScript language value,
         ): either a normal completion containing an Intl mathematical value or a throw completion
       </h1>
+      </del>
+      <ins class="block">
+      <h1>
+        ToIntlMathematicalValue (
+          _value_: an ECMAScript language value,
+        ): either a normal completion containing an Intl MV Record or a throw completion
+      </h1>
+      </ins>
       <dl class="header">
         <dt>description</dt>
         <dd>
