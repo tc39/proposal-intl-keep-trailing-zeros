@@ -31,7 +31,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
         <dd>It populates the internal slots of _intlObj_ that affect locale-independent number rounding (see <emu-xref href="#sec-formatnumerictostring"></emu-xref>).</dd>
       </dl>
       <emu-alg>
-        1. Let _mnid_ be ? GetNumberOption(_options_, *"minimumIntegerDigits,"*, 1, 21, 1).
+        1. Let _mnid_ be ? GetNumberOption(_options_, *"minimumIntegerDigits"*, 1, 21, 1).
         1. Let _mnfd_ be ? Get(_options_, *"minimumFractionDigits"*).
         1. Let _mxfd_ be ? Get(_options_, *"maximumFractionDigits"*).
         1. Let _mnsd_ be ? Get(_options_, *"minimumSignificantDigits"*).
@@ -153,7 +153,7 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
                 a non-negative integer
               </td>
               <td>
-                The number of decimal digits in [[Value]] when it is derived from a String (before applying its exponent part, and ignoring leading zeros), or 0 otherwise.
+                The source decimal digit count from a String primitive, as computed by ToIntlMathematicalValue. StringIntlMVFromParts determines this count before applying the exponent part and ignoring leading zeros, with a special case for zero.
               </td>
             </tr>
           <tr>
@@ -164,11 +164,17 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
               a non-negative integer
             </td>
             <td>
-              The number of decimal fraction digits in [[Value]] when it is derived from a String (based on its mathemetical value, so accounting for any exponent), or 0 otherwise.
+              The source decimal fraction digit count from a String primitive, accounting for its exponent part, as computed by ToIntlMathematicalValue.
             </td>
           </tr>
           </table>
         </emu-table>
+        <emu-note>
+          These fields describe source precision, not the digits of the final [[Value]].
+          For example, *"0.00e1"* produces counts of 3 and 1, respectively.
+          Underflow preserves source precision: *"1e-400"* has [[Value]] 0 with counts of 1 and 400.
+          Non-decimal strings and non-String primitives have zero counts.
+        </emu-note>
       </emu-clause>
     </ins>
 
@@ -493,8 +499,6 @@ location: https://tc39.es/proposal-intl-keep-trailing-zeros/
           1. Let _int_ be the length of _a_.
           1. <ins>If every code unit of _m_ is 0x0030 (DIGIT ZERO), then</ins>
             1. <ins>Let _sfc_ be _fractionDigitCount_.</ins>
-          1. <ins>Else if _n_ = 0, then</ins>
-            1. <ins>Let _sfc_ be _digitCount_ - _int_.</ins>
           1. <ins>Else,</ins>
             1. <ins>Let _sfc_ be _digitCount_ - _int_ + _zn_.</ins>
           1. <ins>Let _cut_ be _maxFraction_ - max(_sfc_, _minFraction_).</ins>
